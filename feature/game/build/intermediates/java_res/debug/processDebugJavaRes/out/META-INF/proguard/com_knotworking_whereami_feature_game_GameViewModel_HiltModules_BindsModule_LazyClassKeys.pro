@@ -1,0 +1,1 @@
+-keep,allowobfuscation,allowshrinking class com.knotworking.whereami.feature.game.GameViewModel

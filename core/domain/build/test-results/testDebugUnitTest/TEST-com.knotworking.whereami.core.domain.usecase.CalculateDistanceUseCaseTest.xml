@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.knotworking.whereami.core.domain.usecase.CalculateDistanceUseCaseTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-03-15T14:52:34.534Z" hostname="Bens-MBP.fritz.box" time="0.003">
+  <properties/>
+  <testcase name="calculate distance between same points" classname="com.knotworking.whereami.core.domain.usecase.CalculateDistanceUseCaseTest" time="0.0"/>
+  <testcase name="calculate distance between London and Paris" classname="com.knotworking.whereami.core.domain.usecase.CalculateDistanceUseCaseTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
