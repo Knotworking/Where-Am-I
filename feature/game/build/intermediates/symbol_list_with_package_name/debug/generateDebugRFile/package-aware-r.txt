@@ -1,1 +1,0 @@
-com.knotworking.whereami.feature.game

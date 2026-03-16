@@ -1,12 +1,12 @@
 # Project Plan
 
-Create a GeoGuessr-type game for Android called 'WhereAmI' using the Flickr API, Google Maps SDK, and following Clean Architecture with feature modules and modern Android libraries.
+Create a GeoGuessr-type game for Android called 'Where Am I' using the Flickr API, Google Maps SDK, and following Clean Architecture with feature modules and modern Android libraries.
 
 ## Project Brief
 
-WhereAmI Project Brief
+Where Am I Project Brief
 
-Where AmI is a GeoGuessr-inspired game for Android that challenges players to pinpoint the location of geotagged photos. By leveraging the Flickr API and modern Android development practices, the app provides an engaging, high-performance, and visually vibrant experience.
+Where Am I? is a GeoGuessr-inspired game for Android that challenges players to pinpoint the location of geotagged photos. By leveraging the Flickr API and modern Android development practices, the app provides an engaging, high-performance, and visually vibrant experience.
 
 ## Features
 - Random Photo Discovery: Fetches and displays geotagged images using the Flickr API.

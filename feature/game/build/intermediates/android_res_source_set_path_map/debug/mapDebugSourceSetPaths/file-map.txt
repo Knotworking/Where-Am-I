@@ -1,8 +1,0 @@
-com.knotworking.whereami.feature.game-pngs-0 /Users/ben/AndroidStudioProjects/WhereAmI/feature/game/build/generated/res/pngs/debug
-com.knotworking.whereami.feature.game-updated_navigation_xml-1 /Users/ben/AndroidStudioProjects/WhereAmI/feature/game/build/generated/updated_navigation_xml/debug
-com.knotworking.whereami.feature.game-mergeDebugResources-2 /Users/ben/AndroidStudioProjects/WhereAmI/feature/game/build/intermediates/incremental/debug/mergeDebugResources/merged.dir
-com.knotworking.whereami.feature.game-mergeDebugResources-3 /Users/ben/AndroidStudioProjects/WhereAmI/feature/game/build/intermediates/incremental/debug/mergeDebugResources/stripped.dir
-com.knotworking.whereami.feature.game-debug-4 /Users/ben/AndroidStudioProjects/WhereAmI/feature/game/build/intermediates/merged_res/debug/mergeDebugResources
-com.knotworking.whereami.feature.game-debug-5 /Users/ben/AndroidStudioProjects/WhereAmI/feature/game/build/intermediates/packaged_res/debug/packageDebugResources
-com.knotworking.whereami.feature.game-debug-6 /Users/ben/AndroidStudioProjects/WhereAmI/feature/game/src/debug/res
-com.knotworking.whereami.feature.game-main-7 /Users/ben/AndroidStudioProjects/WhereAmI/feature/game/src/main/res
