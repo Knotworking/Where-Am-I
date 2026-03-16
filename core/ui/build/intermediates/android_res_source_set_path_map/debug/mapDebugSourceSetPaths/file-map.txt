@@ -1,8 +1,0 @@
-com.knotworking.whereami.core.ui-pngs-0 /Users/ben/AndroidStudioProjects/WhereAmI/core/ui/build/generated/res/pngs/debug
-com.knotworking.whereami.core.ui-updated_navigation_xml-1 /Users/ben/AndroidStudioProjects/WhereAmI/core/ui/build/generated/updated_navigation_xml/debug
-com.knotworking.whereami.core.ui-mergeDebugResources-2 /Users/ben/AndroidStudioProjects/WhereAmI/core/ui/build/intermediates/incremental/debug/mergeDebugResources/merged.dir
-com.knotworking.whereami.core.ui-mergeDebugResources-3 /Users/ben/AndroidStudioProjects/WhereAmI/core/ui/build/intermediates/incremental/debug/mergeDebugResources/stripped.dir
-com.knotworking.whereami.core.ui-debug-4 /Users/ben/AndroidStudioProjects/WhereAmI/core/ui/build/intermediates/merged_res/debug/mergeDebugResources
-com.knotworking.whereami.core.ui-debug-5 /Users/ben/AndroidStudioProjects/WhereAmI/core/ui/build/intermediates/packaged_res/debug/packageDebugResources
-com.knotworking.whereami.core.ui-debug-6 /Users/ben/AndroidStudioProjects/WhereAmI/core/ui/src/debug/res
-com.knotworking.whereami.core.ui-main-7 /Users/ben/AndroidStudioProjects/WhereAmI/core/ui/src/main/res
