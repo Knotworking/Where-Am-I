@@ -132,9 +132,14 @@ private fun RoundView(
 ) {
     val photo = uiState.currentPhoto ?: return
     var selectedLocation by remember(uiState.currentRound) { mutableStateOf<LatLng?>(null) }
+    
+    // Define camera state at the top level of the composable
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(LatLng(0.0, 0.0), 1f)
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Photo Section (Top Half)
+        // Photo Section
         Box(
             modifier = Modifier
                 .weight(1f)
@@ -147,7 +152,6 @@ private fun RoundView(
                 contentScale = ContentScale.Crop
             )
             
-            // Round & Score Info
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -160,22 +164,23 @@ private fun RoundView(
             }
         }
 
-        // Map Section (Bottom Half)
+        // Map Section
         Box(
             modifier = Modifier
                 .weight(1.2f)
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
-                .background(MaterialTheme.colorScheme.surface)
         ) {
-            val cameraPositionState = rememberCameraPositionState {
-                position = CameraPosition.fromLatLngZoom(LatLng(0.0, 0.0), 1f)
-            }
-
             GoogleMap(
                 modifier = Modifier.fillMaxSize(),
                 cameraPositionState = cameraPositionState,
-                uiSettings = MapUiSettings(zoomControlsEnabled = false),
+                uiSettings = MapUiSettings(
+                    zoomControlsEnabled = false,
+                    myLocationButtonEnabled = false
+                ),
+                properties = MapProperties(
+                    mapType = MapType.NORMAL
+                ),
                 onMapClick = {
                     if (uiState.lastGuess == null) {
                         selectedLocation = it
