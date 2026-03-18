@@ -13,10 +13,10 @@ plugins {
 
 android {
     namespace = "com.knotworking.whereami.core.network"
-    compileSdk = 36
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = 24
+        minSdk = libs.versions.minSdk.get().toInt()
         
         val flickrKey = localProps.getProperty("FLICKR_API_KEY") ?: ""
         buildConfigField("String", "FLICKR_API_KEY", "\"$flickrKey\"")
