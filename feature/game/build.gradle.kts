@@ -7,10 +7,10 @@ plugins {
 
 android {
     namespace = "com.knotworking.whereami.feature.game"
-    compileSdk = 36
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = 24
+        minSdk = libs.versions.minSdk.get().toInt()
     }
 
     buildFeatures {
@@ -19,9 +19,10 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:model"))
-    implementation(project(":core:domain"))
+    implementation(project(":domain:photo"))
+    implementation(project(":domain:game"))
     implementation(project(":core:ui"))
+
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
