@@ -19,9 +19,10 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:model"))
-    implementation(project(":core:domain"))
+    implementation(project(":domain:photo"))
+    implementation(project(":domain:game"))
     implementation(project(":core:ui"))
+
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)

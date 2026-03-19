@@ -1,6 +1,6 @@
 package com.knotworking.whereami.core.network
 
-import com.knotworking.whereami.core.model.Photo
+import com.knotworking.whereami.domain.photo.model.Photo
 import com.knotworking.whereami.core.network.di.FlickrApiKey
 import javax.inject.Inject
 

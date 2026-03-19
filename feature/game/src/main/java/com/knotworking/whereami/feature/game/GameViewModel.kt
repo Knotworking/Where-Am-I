@@ -2,11 +2,11 @@ package com.knotworking.whereami.feature.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.knotworking.whereami.core.domain.usecase.CalculateDistanceUseCase
-import com.knotworking.whereami.core.domain.usecase.CalculateScoreUseCase
-import com.knotworking.whereami.core.domain.usecase.GetRandomPhotoUseCase
-import com.knotworking.whereami.core.model.Guess
-import com.knotworking.whereami.core.model.Photo
+import com.knotworking.whereami.domain.game.usecase.CalculateDistanceUseCase
+import com.knotworking.whereami.domain.game.usecase.CalculateScoreUseCase
+import com.knotworking.whereami.domain.photo.usecase.GetRandomPhotoUseCase
+import com.knotworking.whereami.domain.game.model.Guess
+import com.knotworking.whereami.domain.photo.model.Photo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

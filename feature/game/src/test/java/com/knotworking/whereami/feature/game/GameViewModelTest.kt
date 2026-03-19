@@ -1,9 +1,9 @@
 package com.knotworking.whereami.feature.game
 
-import com.knotworking.whereami.core.domain.usecase.CalculateDistanceUseCase
-import com.knotworking.whereami.core.domain.usecase.CalculateScoreUseCase
-import com.knotworking.whereami.core.domain.usecase.GetRandomPhotoUseCase
-import com.knotworking.whereami.core.model.Photo
+import com.knotworking.whereami.domain.game.usecase.CalculateDistanceUseCase
+import com.knotworking.whereami.domain.game.usecase.CalculateScoreUseCase
+import com.knotworking.whereami.domain.photo.usecase.GetRandomPhotoUseCase
+import com.knotworking.whereami.domain.photo.model.Photo
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk

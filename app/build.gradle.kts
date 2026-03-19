@@ -54,7 +54,7 @@ android {
 
 dependencies {
     implementation(project(":feature:game"))
-    implementation(project(":core:data"))
+    implementation(project(":data:photo"))
     implementation(project(":core:network"))
     implementation(project(":core:ui"))
 
