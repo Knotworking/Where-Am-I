@@ -4,7 +4,7 @@ import com.knotworking.whereami.core.network.model.FlickrResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface FlickrService {
+interface FlickrApi {
     @GET("services/rest/")
     suspend fun searchPhotos(
         @Query("method") method: String = "flickr.photos.search",

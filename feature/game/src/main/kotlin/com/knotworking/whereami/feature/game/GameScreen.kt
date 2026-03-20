@@ -1,27 +1,70 @@
 package com.knotworking.whereami.feature.game
 
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.*
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapType
+import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.Polyline
+import com.google.maps.android.compose.rememberCameraPositionState
+import com.knotworking.whereami.domain.game.model.Guess
+import com.knotworking.whereami.domain.photo.model.Photo
 import java.util.Locale
 
 @Composable
@@ -40,11 +83,13 @@ fun GameScreen(
                 message = uiState.error!!,
                 onRetry = { viewModel.startNewGame() }
             )
+
             uiState.isGameOver -> GameOverView(
                 totalScore = uiState.totalScore,
                 onRestart = { viewModel.startNewGame() }
             )
-            uiState.currentPhoto != null -> RoundView(
+
+            else -> RoundView(
                 uiState = uiState,
                 onSubmitGuess = viewModel::submitGuess,
                 onNextRound = viewModel::nextRound
@@ -66,7 +111,9 @@ private fun LoadingView() {
 @Composable
 private fun ErrorView(message: String, onRetry: () -> Unit) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(32.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -76,11 +123,17 @@ private fun ErrorView(message: String, onRetry: () -> Unit) {
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = message, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyLarge)
+        Text(
+            text = message,
+            color = MaterialTheme.colorScheme.error,
+            style = MaterialTheme.typography.bodyLarge
+        )
         Spacer(modifier = Modifier.height(32.dp))
         Button(
             onClick = onRetry,
-            modifier = Modifier.fillMaxWidth().height(56.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
             shape = RoundedCornerShape(28.dp)
         ) {
             Icon(Icons.Default.Refresh, contentDescription = null)
@@ -93,7 +146,9 @@ private fun ErrorView(message: String, onRetry: () -> Unit) {
 @Composable
 private fun GameOverView(totalScore: Int, onRestart: () -> Unit) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(32.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -116,7 +171,9 @@ private fun GameOverView(totalScore: Int, onRestart: () -> Unit) {
         Spacer(modifier = Modifier.height(48.dp))
         Button(
             onClick = onRestart,
-            modifier = Modifier.height(64.dp).fillMaxWidth(),
+            modifier = Modifier
+                .height(64.dp)
+                .fillMaxWidth(),
             shape = RoundedCornerShape(32.dp)
         ) {
             Text("Start New Game", fontSize = 20.sp)
@@ -130,161 +187,290 @@ private fun RoundView(
     onSubmitGuess: (Double, Double) -> Unit,
     onNextRound: () -> Unit
 ) {
-    val photo = uiState.currentPhoto ?: return
     var selectedLocation by remember(uiState.currentRound) { mutableStateOf<LatLng?>(null) }
-    
-    // Define camera state at the top level of the composable
+    var isPhotoVisible by remember(uiState.currentRound) { mutableStateOf(true) }
+
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(LatLng(0.0, 0.0), 1f)
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        // Photo Section
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
+    Box(modifier = Modifier.fillMaxSize()) {
+        GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = cameraPositionState,
+            uiSettings = MapUiSettings(
+                zoomControlsEnabled = false,
+                myLocationButtonEnabled = false
+            ),
+            properties = MapProperties(
+                mapType = MapType.NORMAL
+            ),
+            onMapClick = {
+                if (uiState.lastGuess == null) {
+                    selectedLocation = it
+                }
+            }
         ) {
-            AsyncImage(
-                model = photo.urlM,
-                contentDescription = photo.title,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-            
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .statusBarsPadding(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                InfoChip(text = "Round " + uiState.currentRound + "/" + GameViewModel.TOTAL_ROUNDS)
-                InfoChip(text = "Score: " + uiState.totalScore)
+            selectedLocation?.let {
+                Marker(
+                    state = MarkerState(position = it),
+                    title = "Your Guess"
+                )
+            }
+
+            uiState.lastGuess?.let { guess ->
+                val actual = LatLng(guess.actualLatitude, guess.actualLongitude)
+                val guessed = LatLng(guess.latitude, guess.longitude)
+
+                Marker(
+                    state = MarkerState(position = actual),
+                    title = "Actual Location",
+                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
+                )
+
+                Polyline(
+                    points = listOf(actual, guessed),
+                    color = MaterialTheme.colorScheme.primary,
+                    width = 8f
+                )
             }
         }
 
-        // Map Section
+        PhotoOverlay(
+            photo = uiState.currentPhoto,
+            isLoading = uiState.isPhotoLoading,
+            isVisible = isPhotoVisible,
+            onClose = { isPhotoVisible = false },
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 16.dp)
+                .zIndex(1f)
+        )
+
+        TopControls(
+            currentRound = uiState.currentRound,
+            totalRounds = GameViewModel.TOTAL_ROUNDS,
+            totalScore = uiState.totalScore,
+            isPhotoVisible = isPhotoVisible,
+            onShowPhoto = { isPhotoVisible = true },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .statusBarsPadding()
+        )
+
+        BottomControls(
+            lastGuess = uiState.lastGuess,
+            selectedLocation = selectedLocation,
+            currentRound = uiState.currentRound,
+            totalRounds = GameViewModel.TOTAL_ROUNDS,
+            onSubmitGuess = {
+                selectedLocation?.let {
+                    onSubmitGuess(it.latitude, it.longitude)
+                }
+            },
+            onNextRound = {
+                onNextRound()
+                isPhotoVisible = true
+            },
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .navigationBarsPadding()
+        )
+    }
+}
+
+@Composable
+private fun PhotoOverlay(
+    modifier: Modifier = Modifier,
+    photo: Photo?,
+    isLoading: Boolean,
+    isVisible: Boolean,
+    onClose: () -> Unit
+) {
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = slideInHorizontally(initialOffsetX = { it }) + fadeIn(),
+        exit = slideOutHorizontally(targetOffsetX = { it }) + fadeOut(),
+        modifier = modifier
+    ) {
         Box(
             modifier = Modifier
-                .weight(1.2f)
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
+                .fillMaxWidth(0.9f)
+                .fillMaxHeight(0.7f)
+                .clip(RoundedCornerShape(24.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .clickable { onClose() },
+            contentAlignment = Alignment.Center
         ) {
-            GoogleMap(
-                modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState,
-                uiSettings = MapUiSettings(
-                    zoomControlsEnabled = false,
-                    myLocationButtonEnabled = false
-                ),
-                properties = MapProperties(
-                    mapType = MapType.NORMAL
-                ),
-                onMapClick = {
-                    if (uiState.lastGuess == null) {
-                        selectedLocation = it
-                    }
-                }
-            ) {
-                selectedLocation?.let {
-                    Marker(
-                        state = MarkerState(position = it),
-                        title = "Your Guess"
-                    )
-                }
+            if (photo != null) {
+                AsyncImage(
+                    model = photo.urlM,
+                    contentDescription = photo.title,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                    contentScale = ContentScale.Fit
+                )
+            } else if (isLoading) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.primary,
+                    strokeWidth = 4.dp
+                )
+            }
 
-                uiState.lastGuess?.let { guess ->
-                    val actual = LatLng(guess.actualLatitude, guess.actualLongitude)
-                    val guessed = LatLng(guess.latitude, guess.longitude)
-                    
-                    Marker(
-                        state = MarkerState(position = actual),
-                        title = "Actual Location",
-                        icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
-                    )
-                    
-                    Polyline(
-                        points = listOf(actual, guessed),
-                        color = MaterialTheme.colorScheme.primary,
-                        width = 8f
-                    )
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(12.dp),
+                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
+                shape = CircleShape
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Hide",
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .size(20.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun TopControls(
+    currentRound: Int,
+    totalRounds: Int,
+    totalScore: Int,
+    isPhotoVisible: Boolean,
+    onShowPhoto: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Top
+    ) {
+        InfoChip(text = "Round $currentRound/$totalRounds")
+
+        if (!isPhotoVisible) {
+            Surface(
+                onClick = onShowPhoto,
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(20.dp),
+                tonalElevation = 4.dp
+            ) {
+                Text(
+                    text = "VIEW PHOTO",
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+
+        InfoChip(text = "Score: $totalScore")
+    }
+}
+
+@Composable
+private fun BottomControls(
+    lastGuess: Guess?,
+    selectedLocation: LatLng?,
+    currentRound: Int,
+    totalRounds: Int,
+    onSubmitGuess: () -> Unit,
+    onNextRound: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        Column {
+            AnimatedVisibility(
+                visible = lastGuess == null,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
+            ) {
+                Button(
+                    onClick = onSubmitGuess,
+                    enabled = selectedLocation != null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(64.dp),
+                    shape = RoundedCornerShape(32.dp),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp)
+                ) {
+                    Text("Submit Guess", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 }
             }
 
-            // UI Overlays for Map
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    .navigationBarsPadding(),
-                contentAlignment = Alignment.BottomCenter
+            AnimatedVisibility(
+                visible = lastGuess != null,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
             ) {
-                Column {
-                    AnimatedVisibility(
-                        visible = uiState.lastGuess == null,
-                        enter = fadeIn() + expandVertically(),
-                        exit = fadeOut() + shrinkVertically()
-                    ) {
-                        Button(
-                            onClick = {
-                                selectedLocation?.let {
-                                    onSubmitGuess(it.latitude, it.longitude)
-                                }
-                            },
-                            enabled = selectedLocation != null,
-                            modifier = Modifier.fillMaxWidth().height(64.dp),
-                            shape = RoundedCornerShape(32.dp),
-                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp)
-                        ) {
-                            Text("Submit Guess", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                        }
-                    }
-
-                    AnimatedVisibility(
-                        visible = uiState.lastGuess != null,
-                        enter = fadeIn() + expandVertically(),
-                        exit = fadeOut() + shrinkVertically()
-                    ) {
-                        Surface(
-                            modifier = Modifier.fillMaxWidth(),
-                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.95f),
-                            shape = RoundedCornerShape(24.dp),
-                            tonalElevation = 8.dp
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(20.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                uiState.lastGuess?.let { guess ->
-                                    Text(
-                                        text = "Round Score: " + guess.score,
-                                        style = MaterialTheme.typography.headlineMedium,
-                                        fontWeight = FontWeight.ExtraBold,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                    val distanceKm = guess.distanceMeters / 1000.0
-                                    Text(
-                                        text = "You were " + String.format(Locale.getDefault(), "%.2f", distanceKm) + " km away",
-                                        style = MaterialTheme.typography.bodyLarge
-                                    )
-                                }
-                                Spacer(modifier = Modifier.height(20.dp))
-                                Button(
-                                    onClick = onNextRound,
-                                    modifier = Modifier.fillMaxWidth().height(56.dp),
-                                    shape = RoundedCornerShape(28.dp)
-                                ) {
-                                    Text(
-                                        text = if (uiState.currentRound < GameViewModel.TOTAL_ROUNDS) "Next Round" else "View Results",
-                                        fontSize = 18.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-                            }
-                        }
-                    }
+                lastGuess?.let { guess ->
+                    ScoreOverlay(
+                        guess = guess,
+                        onNextRound = onNextRound,
+                        isLastRound = currentRound >= totalRounds
+                    )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ScoreOverlay(
+    guess: Guess,
+    onNextRound: () -> Unit,
+    isLastRound: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.95f),
+        shape = RoundedCornerShape(24.dp),
+        tonalElevation = 8.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Round Score: " + guess.score,
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            val distanceKm = guess.distanceMeters / 1000.0
+            Text(
+                text = "You were " + String.format(
+                    Locale.getDefault(),
+                    "%.2f",
+                    distanceKm
+                ) + " km away",
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            Button(
+                onClick = onNextRound,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(28.dp)
+            ) {
+                Text(
+                    text = if (!isLastRound) "Next Round" else "View Results",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }
@@ -302,6 +488,103 @@ private fun InfoChip(text: String) {
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             style = MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.ExtraBold
+        )
+    }
+}
+
+// Previews
+@Preview(showBackground = true)
+@Composable
+fun LoadingViewPreview() {
+    MaterialTheme {
+        LoadingView()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ErrorViewPreview() {
+    MaterialTheme {
+        ErrorView(
+            message = "Connection lost. Please check your internet and try again.",
+            onRetry = {})
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun GameOverViewPreview() {
+    MaterialTheme {
+        GameOverView(totalScore = 12450, onRestart = {})
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF001A41)
+@Composable
+fun PhotoOverlayPreview() {
+    MaterialTheme {
+        PhotoOverlay(
+            modifier = Modifier.padding(12.dp),
+            photo = Photo(
+                id = "1",
+                title = "Mountain View",
+                latitude = 0.0,
+                longitude = 0.0,
+                urlM = null
+            ),
+            isLoading = false,
+            isVisible = true,
+            onClose = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TopControlsPreview() {
+    MaterialTheme {
+        TopControls(
+            currentRound = 3,
+            totalRounds = 5,
+            totalScore = 5400,
+            isPhotoVisible = false,
+            onShowPhoto = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BottomControlsGuessingPreview() {
+    MaterialTheme {
+        Box(modifier = Modifier.padding(16.dp)) {
+            BottomControls(
+                lastGuess = null,
+                selectedLocation = LatLng(0.0, 0.0),
+                currentRound = 1,
+                totalRounds = 5,
+                onSubmitGuess = {},
+                onNextRound = {}
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ScoreOverlayPreview() {
+    MaterialTheme {
+        ScoreOverlay(
+            guess = Guess(
+                latitude = 0.0,
+                longitude = 0.0,
+                actualLatitude = 0.1,
+                actualLongitude = 0.1,
+                distanceMeters = 15600.0,
+                score = 4250
+            ),
+            onNextRound = {},
+            isLastRound = false
         )
     }
 }
