@@ -1,9 +1,9 @@
 package com.knotworking.whereami.core.network.di
 
 import com.knotworking.whereami.core.network.BuildConfig
-import com.knotworking.whereami.core.network.FlickrPhotoRemoteDataSource
-import com.knotworking.whereami.core.network.FlickrService
-import com.knotworking.whereami.core.network.PhotoRemoteDataSource
+import com.knotworking.whereami.core.network.FlickrDataSource
+import com.knotworking.whereami.core.network.FlickrApi
+import com.knotworking.whereami.core.network.RemotePhotoDataSource
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Binds
@@ -24,8 +24,8 @@ abstract class NetworkModule {
     @Binds
     @Singleton
     abstract fun bindPhotoRemoteDataSource(
-        flickrPhotoRemoteDataSource: FlickrPhotoRemoteDataSource
-    ): PhotoRemoteDataSource
+        flickrPhotoRemoteDataSource: FlickrDataSource
+    ): RemotePhotoDataSource
 
     companion object {
         @Provides
@@ -54,13 +54,13 @@ abstract class NetworkModule {
 
         @Provides
         @Singleton
-        fun provideFlickrService(moshi: Moshi, okHttpClient: OkHttpClient): FlickrService {
+        fun provideFlickrService(moshi: Moshi, okHttpClient: OkHttpClient): FlickrApi {
             return Retrofit.Builder()
                 .baseUrl("https://www.flickr.com/")
                 .client(okHttpClient)
                 .addConverterFactory(MoshiConverterFactory.create(moshi))
                 .build()
-                .create(FlickrService::class.java)
+                .create(FlickrApi::class.java)
         }
         
         @Provides
