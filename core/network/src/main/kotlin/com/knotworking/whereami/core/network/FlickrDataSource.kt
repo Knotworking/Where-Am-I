@@ -17,10 +17,6 @@ class FlickrDataSource @Inject constructor(
         return response.photos.photo.map { dto ->
             Photo(
                 id = dto.id,
-                owner = dto.owner,
-                secret = dto.secret,
-                server = dto.server,
-                farm = dto.farm,
                 title = dto.title,
                 latitude = dto.latitude.toDoubleOrNull() ?: 0.0,
                 longitude = dto.longitude.toDoubleOrNull() ?: 0.0,
