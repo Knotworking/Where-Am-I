@@ -40,7 +40,9 @@ class GameViewModel @Inject constructor(
                 currentRound = 1,
                 guesses = emptyList(),
                 lastGuess = null,
-                isGameOver = false
+                isGameOver = false,
+                isLoading = true,
+                isPhotoLoading = true
             )
         }
         loadNextRound()
@@ -48,16 +50,16 @@ class GameViewModel @Inject constructor(
 
     private fun loadNextRound() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null, currentPhoto = null) }
+            _uiState.update { it.copy(isPhotoLoading = true, error = null, currentPhoto = null) }
             try {
                 val photo = getRandomPhotoUseCase()
                 if (photo != null) {
-                    _uiState.update { it.copy(isLoading = false, currentPhoto = photo) }
+                    _uiState.update { it.copy(isLoading = false, isPhotoLoading = false, currentPhoto = photo) }
                 } else {
-                    _uiState.update { it.copy(isLoading = false, error = "Failed to load photo") }
+                    _uiState.update { it.copy(isLoading = false, isPhotoLoading = false, error = "Failed to load photo") }
                 }
             } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, error = e.message ?: "Unknown error") }
+                _uiState.update { it.copy(isLoading = false, isPhotoLoading = false, error = e.message ?: "Unknown error") }
             }
         }
     }
@@ -106,6 +108,7 @@ class GameViewModel @Inject constructor(
 
 data class GameUiState(
     val isLoading: Boolean = false,
+    val isPhotoLoading: Boolean = false,
     val currentPhoto: Photo? = null,
     val currentRound: Int = 1,
     val totalScore: Int = 0,

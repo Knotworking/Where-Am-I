@@ -89,7 +89,7 @@ fun GameScreen(
                 onRestart = { viewModel.startNewGame() }
             )
 
-            uiState.currentPhoto != null -> RoundView(
+            else -> RoundView(
                 uiState = uiState,
                 onSubmitGuess = viewModel::submitGuess,
                 onNextRound = viewModel::nextRound
@@ -187,7 +187,6 @@ private fun RoundView(
     onSubmitGuess: (Double, Double) -> Unit,
     onNextRound: () -> Unit
 ) {
-    val photo = uiState.currentPhoto ?: return
     var selectedLocation by remember(uiState.currentRound) { mutableStateOf<LatLng?>(null) }
     var isPhotoVisible by remember(uiState.currentRound) { mutableStateOf(true) }
 
@@ -238,7 +237,8 @@ private fun RoundView(
         }
 
         PhotoOverlay(
-            photo = photo,
+            photo = uiState.currentPhoto,
+            isLoading = uiState.isPhotoLoading,
             isVisible = isPhotoVisible,
             onClose = { isPhotoVisible = false },
             modifier = Modifier
@@ -284,7 +284,8 @@ private fun RoundView(
 @Composable
 private fun PhotoOverlay(
     modifier: Modifier = Modifier,
-    photo: Photo,
+    photo: Photo?,
+    isLoading: Boolean,
     isVisible: Boolean,
     onClose: () -> Unit
 ) {
@@ -300,16 +301,24 @@ private fun PhotoOverlay(
                 .fillMaxHeight(0.7f)
                 .clip(RoundedCornerShape(24.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant)
-                .clickable { onClose() }
+                .clickable { onClose() },
+            contentAlignment = Alignment.Center
         ) {
-            AsyncImage(
-                model = photo.urlM,
-                contentDescription = photo.title,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
-                contentScale = ContentScale.Fit
-            )
+            if (photo != null) {
+                AsyncImage(
+                    model = photo.urlM,
+                    contentDescription = photo.title,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                    contentScale = ContentScale.Fit
+                )
+            } else if (isLoading) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.primary,
+                    strokeWidth = 4.dp
+                )
+            }
 
             Surface(
                 modifier = Modifier
@@ -523,6 +532,7 @@ fun PhotoOverlayPreview() {
                 longitude = 0.0,
                 urlM = null
             ),
+            isLoading = false,
             isVisible = true,
             onClose = {}
         )
