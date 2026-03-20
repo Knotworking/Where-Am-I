@@ -39,6 +39,7 @@ class GameViewModel @Inject constructor(
                 totalScore = 0,
                 currentRound = 1,
                 guesses = emptyList(),
+                lastGuess = null,
                 isGameOver = false
             )
         }
