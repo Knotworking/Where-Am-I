@@ -19,7 +19,7 @@ class SettingsRepositoryImpl @Inject constructor(
     }
 
     override fun getPhotoSource(): Flow<PhotoSource> = dataStore.data.map { preferences ->
-        val sourceName = preferences[PreferencesKeys.PHOTO_SOURCE] ?: PhotoSource.FLICKR.name
+        val sourceName = preferences[PreferencesKeys.PHOTO_SOURCE] ?: PhotoSource.BENHIKES.name
         PhotoSource.valueOf(sourceName)
     }
 
