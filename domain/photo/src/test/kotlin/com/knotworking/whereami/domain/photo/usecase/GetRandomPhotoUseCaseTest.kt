@@ -15,19 +15,17 @@ class GetRandomPhotoUseCaseTest {
 
     @Test
     fun `invoke returns photo from repository`() = runBlocking {
-        val mockPhotos = listOf(
-            Photo("1", "o", "s", "s", 1, "t", 0.0, 0.0, "u")
-        )
-        coEvery { photoRepository.getRandomGeotaggedPhotos(10) } returns mockPhotos
+        val mockPhoto = Photo("1", "o", 0.0, 0.0, "t")
+        coEvery { photoRepository.getRandomGeotaggedPhoto() } returns mockPhoto
 
         val result = getRandomPhotoUseCase()
 
-        assertEquals(mockPhotos[0], result)
+        assertEquals(mockPhoto, result)
     }
 
     @Test
-    fun `invoke returns null when repository returns empty list`() = runBlocking {
-        coEvery { photoRepository.getRandomGeotaggedPhotos(10) } returns emptyList()
+    fun `invoke returns null when repository returns no photo`() = runBlocking {
+        coEvery { photoRepository.getRandomGeotaggedPhoto() } returns null
 
         val result = getRandomPhotoUseCase()
 
