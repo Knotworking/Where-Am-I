@@ -9,66 +9,39 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.MapProperties
-import com.google.maps.android.compose.MapType
-import com.google.maps.android.compose.MapUiSettings
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
-import com.google.maps.android.compose.Polyline
-import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.*
 import com.knotworking.whereami.domain.game.model.Guess
 import com.knotworking.whereami.domain.photo.model.Photo
 import java.util.Locale
 
 @Composable
 fun GameScreen(
+    onSettingsClick: () -> Unit,
     viewModel: GameViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -92,7 +65,8 @@ fun GameScreen(
             else -> RoundView(
                 uiState = uiState,
                 onSubmitGuess = viewModel::submitGuess,
-                onNextRound = viewModel::nextRound
+                onNextRound = viewModel::nextRound,
+                onSettingsClick = onSettingsClick
             )
         }
     }
@@ -185,7 +159,8 @@ private fun GameOverView(totalScore: Int, onRestart: () -> Unit) {
 private fun RoundView(
     uiState: GameUiState,
     onSubmitGuess: (Double, Double) -> Unit,
-    onNextRound: () -> Unit
+    onNextRound: () -> Unit,
+    onSettingsClick: () -> Unit
 ) {
     var selectedLocation by remember(uiState.currentRound) { mutableStateOf<LatLng?>(null) }
     var isPhotoVisible by remember(uiState.currentRound) { mutableStateOf(true) }
@@ -253,6 +228,7 @@ private fun RoundView(
             totalScore = uiState.totalScore,
             isPhotoVisible = isPhotoVisible,
             onShowPhoto = { isPhotoVisible = true },
+            onSettingsClick = onSettingsClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
@@ -346,14 +322,26 @@ private fun TopControls(
     totalScore: Int,
     isPhotoVisible: Boolean,
     onShowPhoto: () -> Unit,
+    onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Top
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        InfoChip(text = "Round $currentRound/$totalRounds")
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconButton(
+                onClick = onSettingsClick,
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
+                )
+            ) {
+                Icon(Icons.Default.Settings, contentDescription = "Settings")
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            InfoChip(text = "$currentRound/$totalRounds")
+        }
 
         if (!isPhotoVisible) {
             Surface(
@@ -519,12 +507,12 @@ fun GameOverViewPreview() {
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFF001A41)
+@Preview()
 @Composable
 fun PhotoOverlayPreview() {
     MaterialTheme {
         PhotoOverlay(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(8.dp),
             photo = Photo(
                 id = "1",
                 title = "Mountain View",
@@ -548,7 +536,8 @@ fun TopControlsPreview() {
             totalRounds = 5,
             totalScore = 5400,
             isPhotoVisible = false,
-            onShowPhoto = {}
+            onShowPhoto = {},
+            onSettingsClick = {}
         )
     }
 }

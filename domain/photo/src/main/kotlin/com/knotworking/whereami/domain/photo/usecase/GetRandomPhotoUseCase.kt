@@ -8,6 +8,6 @@ class GetRandomPhotoUseCase @Inject constructor(
     private val photoRepository: PhotoRepository
 ) {
     suspend operator fun invoke(): Photo? {
-        return photoRepository.getRandomGeotaggedPhotos(10).randomOrNull()
+        return photoRepository.getRandomGeotaggedPhoto()
     }
 }
