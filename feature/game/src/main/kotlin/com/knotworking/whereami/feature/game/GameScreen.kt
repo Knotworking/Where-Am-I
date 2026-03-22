@@ -78,11 +78,30 @@ import com.knotworking.whereami.domain.photo.model.Photo
 import java.util.Locale
 
 @Composable
-fun GameScreen(
+fun GameScreenRoot(
     onSettingsClick: () -> Unit,
     viewModel: GameViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    GameScreen(
+        onSettingsClick = onSettingsClick,
+        onStartNewGame = viewModel::startNewGame,
+        onNextRound = viewModel::nextRound,
+        onSubmitGuess = viewModel::submitGuess,
+        uiState = uiState
+    )
+}
+
+@Composable
+fun GameScreen(
+    onSettingsClick: () -> Unit,
+    onStartNewGame: () -> Unit,
+    onNextRound: () -> Unit,
+    onSubmitGuess: (Double, Double) -> Unit,
+    uiState: GameUiState
+) {
+
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -91,19 +110,19 @@ fun GameScreen(
         when {
             uiState.isLoading -> LoadingView()
             uiState.error != null -> ErrorView(
-                message = uiState.error!!,
-                onRetry = { viewModel.startNewGame() }
+                message = uiState.error,
+                onRetry = onStartNewGame
             )
 
             uiState.isGameOver -> GameOverView(
                 totalScore = uiState.totalScore,
-                onRestart = { viewModel.startNewGame() }
+                onRestart = onStartNewGame
             )
 
             else -> RoundView(
                 uiState = uiState,
-                onSubmitGuess = viewModel::submitGuess,
-                onNextRound = viewModel::nextRound,
+                onSubmitGuess = onSubmitGuess,
+                onNextRound = onNextRound,
                 onSettingsClick = onSettingsClick
             )
         }
@@ -556,6 +575,31 @@ private fun InfoChip(text: String) {
 }
 
 // Previews
+
+@Preview(showBackground = true)
+@Composable
+fun GameScreenPreview() {
+    MaterialTheme {
+        GameScreen(
+            onSettingsClick = {},
+            onStartNewGame = {},
+            onNextRound = {},
+            onSubmitGuess = { _, _ -> },
+            uiState = GameUiState(
+                currentRound = 3,
+                totalScore = 8500,
+                currentPhoto = Photo(
+                    id = "1",
+                    title = "Dublin",
+                    latitude = 53.3498,
+                    longitude = -6.2603,
+                    urlM = null
+                )
+            )
+        )
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun LoadingViewPreview() {

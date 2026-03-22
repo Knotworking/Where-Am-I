@@ -4,8 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.knotworking.whereami.feature.game.GameScreen
+import com.knotworking.whereami.feature.game.GameScreenRoot
 import com.knotworking.whereami.feature.settings.SettingsScreen
+import com.knotworking.whereami.feature.settings.SettingsScreenRoot
 
 @Composable
 fun WhereAmINavHost() {
@@ -13,12 +14,12 @@ fun WhereAmINavHost() {
 
     NavHost(navController = navController, startDestination = "game") {
         composable("game") {
-            GameScreen(
+            GameScreenRoot(
                 onSettingsClick = { navController.navigate("settings") }
             )
         }
         composable("settings") {
-            SettingsScreen(
+            SettingsScreenRoot(
                 onBackClick = { navController.popBackStack() }
             )
         }

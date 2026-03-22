@@ -6,7 +6,6 @@ import com.knotworking.whereami.domain.game.usecase.CalculateDistanceUseCase
 import com.knotworking.whereami.domain.game.usecase.CalculateScoreUseCase
 import com.knotworking.whereami.domain.photo.usecase.GetRandomPhotoUseCase
 import com.knotworking.whereami.domain.game.model.Guess
-import com.knotworking.whereami.domain.photo.model.Photo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -106,14 +105,3 @@ class GameViewModel @Inject constructor(
     }
 }
 
-data class GameUiState(
-    val isLoading: Boolean = false,
-    val isPhotoLoading: Boolean = false,
-    val currentPhoto: Photo? = null,
-    val currentRound: Int = 1,
-    val totalScore: Int = 0,
-    val guesses: List<Guess> = emptyList(),
-    val lastGuess: Guess? = null,
-    val isGameOver: Boolean = false,
-    val error: String? = null
-)

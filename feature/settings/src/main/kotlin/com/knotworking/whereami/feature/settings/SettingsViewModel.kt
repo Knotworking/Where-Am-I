@@ -34,6 +34,3 @@ class SettingsViewModel @Inject constructor(
     }
 }
 
-data class SettingsUiState(
-    val photoSource: PhotoSource = PhotoSource.FLICKR
-)

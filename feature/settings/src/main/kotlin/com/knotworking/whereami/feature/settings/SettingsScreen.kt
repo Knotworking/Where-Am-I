@@ -23,14 +23,26 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.knotworking.whereami.domain.photo.model.PhotoSource
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(
+fun SettingsScreenRoot(
     onBackClick: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    SettingsScreen(
+        uiState = uiState,
+        onBackClick = onBackClick,
+        onSetPhotoSource = viewModel::setPhotoSource
+    )
+}
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsScreen(
+    uiState: SettingsUiState,
+    onBackClick: () -> Unit,
+    onSetPhotoSource: (PhotoSource) -> Unit = {}
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -63,7 +75,7 @@ fun SettingsScreen(
                             .height(56.dp)
                             .selectable(
                                 selected = (source == uiState.photoSource),
-                                onClick = { viewModel.setPhotoSource(source) },
+                                onClick = { onSetPhotoSource(source) },
                                 role = Role.RadioButton
                             )
                             .padding(horizontal = 16.dp),
