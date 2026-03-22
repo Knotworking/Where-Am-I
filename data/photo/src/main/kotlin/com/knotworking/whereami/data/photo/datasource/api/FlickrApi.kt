@@ -1,6 +1,6 @@
-package com.knotworking.whereami.core.network
+package com.knotworking.whereami.data.photo.datasource.api
 
-import com.knotworking.whereami.core.network.model.FlickrResponse
+import com.knotworking.whereami.data.photo.datasource.model.FlickrResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 

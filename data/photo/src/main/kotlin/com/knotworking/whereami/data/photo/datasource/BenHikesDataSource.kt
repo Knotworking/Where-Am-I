@@ -1,6 +1,6 @@
 package com.knotworking.whereami.data.photo.datasource
 
-import com.knotworking.whereami.core.network.BenHikesApi
+import com.knotworking.whereami.data.photo.datasource.api.BenHikesApi
 import com.knotworking.whereami.domain.photo.model.Photo
 import javax.inject.Inject
 
@@ -9,8 +9,6 @@ class BenHikesDataSource @Inject constructor(
 ) : RemotePhotoDataSource {
 
     override suspend fun fetchPhotos(count: Int): List<Photo> {
-        // BenHikes endpoint currently returns only 1 photo per call
-        // We can call it multiple times if needed, or just return one in a list
         val photos = mutableListOf<Photo>()
         repeat(count) {
             try {

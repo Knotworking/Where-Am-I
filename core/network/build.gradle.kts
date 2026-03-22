@@ -1,10 +1,3 @@
-import java.util.Properties
-
-val localProps = Properties().also { props ->
-    val f = rootProject.file("local.properties")
-    if (f.exists()) f.inputStream().use { props.load(it) }
-}
-
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.hilt)
@@ -17,21 +10,12 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
-        
-        val flickrKey = localProps.getProperty("FLICKR_API_KEY") ?: ""
-        buildConfigField("String", "FLICKR_API_KEY", "\"$flickrKey\"")
-    }
-
-    buildFeatures {
-        buildConfig = true
     }
 }
 
 dependencies {
-    implementation(project(":domain:photo"))
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-    implementation(libs.retrofit)
     implementation(libs.converter.moshi)
     implementation(libs.moshi.kotlin)
     ksp(libs.moshi.kotlin.codegen)

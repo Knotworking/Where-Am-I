@@ -1,8 +1,5 @@
 package com.knotworking.whereami.core.network.di
 
-import com.knotworking.whereami.core.network.BuildConfig
-import com.knotworking.whereami.core.network.FlickrApi
-import com.knotworking.whereami.core.network.BenHikesApi
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -11,8 +8,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -42,35 +37,4 @@ object NetworkModule {
             .addInterceptor(loggingInterceptor)
             .build()
     }
-
-    @Provides
-    @Singleton
-    fun provideFlickrService(moshi: Moshi, okHttpClient: OkHttpClient): FlickrApi {
-        return Retrofit.Builder()
-            .baseUrl("https://www.flickr.com/")
-            .client(okHttpClient)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .build()
-            .create(FlickrApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideBenHikesService(moshi: Moshi, okHttpClient: OkHttpClient): BenHikesApi {
-        return Retrofit.Builder()
-            .baseUrl("https://benhikes.eu/")
-            .client(okHttpClient)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .build()
-            .create(BenHikesApi::class.java)
-    }
-    
-    @Provides
-    @Singleton
-    @FlickrApiKey
-    fun provideFlickrApiKey(): String = BuildConfig.FLICKR_API_KEY
 }
-
-@javax.inject.Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class FlickrApiKey

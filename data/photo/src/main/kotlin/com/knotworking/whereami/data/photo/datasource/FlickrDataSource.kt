@@ -1,8 +1,8 @@
 package com.knotworking.whereami.data.photo.datasource
 
 import com.knotworking.whereami.domain.photo.model.Photo
-import com.knotworking.whereami.core.network.FlickrApi
-import com.knotworking.whereami.core.network.di.FlickrApiKey
+import com.knotworking.whereami.data.photo.datasource.api.FlickrApi
+import com.knotworking.whereami.data.photo.di.FlickrApiKey
 import javax.inject.Inject
 
 class FlickrDataSource @Inject constructor(

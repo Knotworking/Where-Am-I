@@ -1,6 +1,6 @@
-package com.knotworking.whereami.core.network
+package com.knotworking.whereami.data.photo.datasource.api
 
-import com.knotworking.whereami.core.network.model.BenHikesPhotoDto
+import com.knotworking.whereami.data.photo.datasource.model.BenHikesPhotoDto
 import retrofit2.http.GET
 
 interface BenHikesApi {
