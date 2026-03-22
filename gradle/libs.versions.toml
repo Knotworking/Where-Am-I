@@ -46,6 +46,7 @@ javaxInject = "1"
 compileSdk = "36"
 minSdk = "24"
 targetSdk = "36"
+appcompat = "1.7.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -97,6 +98,7 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.r
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 javax-inject = { group = "javax.inject", name = "javax.inject", version.ref = "javaxInject" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -54,6 +54,9 @@ android {
 
 dependencies {
     implementation(project(":feature:game"))
+    implementation(project(":feature:settings"))
+    implementation(project(":domain:game"))
+    implementation(project(":domain:photo"))
     implementation(project(":data:photo"))
     implementation(project(":core:network"))
     implementation(project(":core:ui"))

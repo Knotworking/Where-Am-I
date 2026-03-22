@@ -331,13 +331,13 @@ private fun PhotoOverlay(
                     .pointerInput(photo) {
                         detectTransformGestures { _, pan, zoom, _ ->
                             scale = (scale * zoom).coerceIn(1f, 5f)
-                            
+
                             val extraWidth = (scale - 1) * maxWidth
                             val extraHeight = (scale - 1) * maxHeight
-                            
+
                             val maxX = extraWidth / 2
                             val maxY = extraHeight / 2
-                            
+
                             offset = Offset(
                                 x = (offset.x + pan.x).coerceIn(-maxX, maxX),
                                 y = (offset.y + pan.y).coerceIn(-maxY, maxY)
