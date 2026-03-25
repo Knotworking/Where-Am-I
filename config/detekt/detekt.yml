@@ -1,0 +1,28 @@
+# Detekt configuration for WhereAmI
+# buildUponDefaultConfig = true, so only overrides are listed here.
+
+naming:
+  FunctionNaming:
+    # Allow Composable functions (PascalCase)
+    functionPattern: '[a-zA-Z][a-zA-Z0-9]*'
+
+complexity:
+  LongMethod:
+    # Composables tend to be long
+    threshold: 80
+  LongParameterList:
+    # Composables often have many parameters
+    functionThreshold: 8
+    constructorThreshold: 8
+
+style:
+  MagicNumber:
+    ignoreNumbers:
+      - '-1'
+      - '0'
+      - '1'
+      - '2'
+      - '0.5'
+      - '360'
+      - '180'
+      - '90'
