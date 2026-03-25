@@ -1,0 +1,58 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>LongMethod:GameScreen.kt$@Composable private fun RoundView( uiState: GameUiState, onSubmitGuess: (Double, Double) -&gt; Unit, onNextRound: () -&gt; Unit, onSettingsClick: () -&gt; Unit )</ID>
+    <ID>LongParameterList:FlickrApi.kt$FlickrApi$( @Query("method") method: String = "flickr.photos.search", @Query("api_key") apiKey: String, @Query("has_geo") hasGeo: Int = 1, @Query("extras") extras: String = "geo,url_m", @Query("format") format: String = "json", @Query("nojsoncallback") noJsonCallback: Int = 1, @Query("per_page") perPage: Int = 100, @Query("page") page: Int = 1 )</ID>
+    <ID>MagicNumber:CalculateDistanceUseCase.kt$CalculateDistanceUseCase$6371000.0</ID>
+    <ID>MagicNumber:CalculateScoreUseCase.kt$CalculateScoreUseCase$2000000.0</ID>
+    <ID>MagicNumber:CalculateScoreUseCase.kt$CalculateScoreUseCase$50.0</ID>
+    <ID>MagicNumber:CalculateScoreUseCase.kt$CalculateScoreUseCase$5000</ID>
+    <ID>MagicNumber:CalculateScoreUseCase.kt$CalculateScoreUseCase$5000.0</ID>
+    <ID>MagicNumber:Color.kt$0xFF001A41</ID>
+    <ID>MagicNumber:Color.kt$0xFF002D6D</ID>
+    <ID>MagicNumber:Color.kt$0xFF004396</ID>
+    <ID>MagicNumber:Color.kt$0xFF005AC1</ID>
+    <ID>MagicNumber:Color.kt$0xFF1B1B1F</ID>
+    <ID>MagicNumber:Color.kt$0xFF281900</ID>
+    <ID>MagicNumber:Color.kt$0xFF3E001D</ID>
+    <ID>MagicNumber:Color.kt$0xFF410002</ID>
+    <ID>MagicNumber:Color.kt$0xFF422D00</ID>
+    <ID>MagicNumber:Color.kt$0xFF5E1133</ID>
+    <ID>MagicNumber:Color.kt$0xFF5F4200</ID>
+    <ID>MagicNumber:Color.kt$0xFF690005</ID>
+    <ID>MagicNumber:Color.kt$0xFF7B2949</ID>
+    <ID>MagicNumber:Color.kt$0xFF7D5800</ID>
+    <ID>MagicNumber:Color.kt$0xFF93000A</ID>
+    <ID>MagicNumber:Color.kt$0xFF984061</ID>
+    <ID>MagicNumber:Color.kt$0xFFAFC6FF</ID>
+    <ID>MagicNumber:Color.kt$0xFFBA1A1A</ID>
+    <ID>MagicNumber:Color.kt$0xFFD8E2FF</ID>
+    <ID>MagicNumber:Color.kt$0xFFE3E2E6</ID>
+    <ID>MagicNumber:Color.kt$0xFFF9BC49</ID>
+    <ID>MagicNumber:Color.kt$0xFFFEFBFF</ID>
+    <ID>MagicNumber:Color.kt$0xFFFFB1C8</ID>
+    <ID>MagicNumber:Color.kt$0xFFFFB4AB</ID>
+    <ID>MagicNumber:Color.kt$0xFFFFD9E2</ID>
+    <ID>MagicNumber:Color.kt$0xFFFFDAD6</ID>
+    <ID>MagicNumber:Color.kt$0xFFFFDEA1</ID>
+    <ID>MagicNumber:Color.kt$0xFFFFFFFF</ID>
+    <ID>MagicNumber:GameScreen.kt$0.7f</ID>
+    <ID>MagicNumber:GameScreen.kt$0.9f</ID>
+    <ID>MagicNumber:GameScreen.kt$1000.0</ID>
+    <ID>MagicNumber:GameScreen.kt$5f</ID>
+    <ID>MagicNumber:SettingsViewModel.kt$SettingsViewModel$5000</ID>
+    <ID>MaxLineLength:GameViewModel.kt$GameViewModel$_uiState.update { it.copy(isLoading = false, isPhotoLoading = false, error = "Failed to load photo") }</ID>
+    <ID>MaxLineLength:GameViewModel.kt$GameViewModel$_uiState.update { it.copy(isLoading = false, isPhotoLoading = false, error = e.message ?: "Unknown error") }</ID>
+    <ID>NewLineAtEndOfFile:GameUiState.kt$com.knotworking.whereami.feature.game.GameUiState.kt</ID>
+    <ID>NewLineAtEndOfFile:SettingsUiState.kt$com.knotworking.whereami.feature.settings.SettingsUiState.kt</ID>
+    <ID>SwallowedException:BenHikesDataSource.kt$BenHikesDataSource$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:BenHikesDataSource.kt$BenHikesDataSource$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GameViewModel.kt$GameViewModel$e: Exception</ID>
+    <ID>TooManyFunctions:GameScreen.kt$com.knotworking.whereami.feature.game.GameScreen.kt</ID>
+    <ID>UnusedParameter:Theme.kt$dynamicColor: Boolean = true</ID>
+    <ID>UnusedPrivateProperty:Theme.kt$private val DarkColorScheme = darkColorScheme( primary = PrimaryDark, onPrimary = OnPrimaryDark, primaryContainer = PrimaryContainerDark, onPrimaryContainer = OnPrimaryContainerDark, secondary = SecondaryDark, onSecondary = OnSecondaryDark, secondaryContainer = SecondaryContainerDark, onSecondaryContainer = OnSecondaryContainerDark, tertiary = TertiaryDark, onTertiary = OnTertiaryDark, tertiaryContainer = TertiaryContainerDark, onTertiaryContainer = OnTertiaryContainerDark, error = ErrorDark, onError = OnErrorDark, errorContainer = ErrorContainerDark, onErrorContainer = OnErrorContainerDark, background = BackgroundDark, onBackground = OnBackgroundDark, surface = SurfaceDark, onSurface = OnSurfaceDark )</ID>
+    <ID>WildcardImport:CalculateDistanceUseCase.kt$import kotlin.math.*</ID>
+    <ID>WildcardImport:SettingsScreen.kt$import androidx.compose.foundation.layout.*</ID>
+  </CurrentIssues>
+</SmellBaseline>

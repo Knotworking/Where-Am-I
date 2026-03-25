@@ -66,3 +66,37 @@ app → feature:* → domain:* ← data:* ← core:network
 - `feature:*` modules depend on `domain:*` but never on `data:*` directly
 - New shared UI components go in `core:ui`; new shared network setup goes in `core:network`
 - API keys and local config belong in `local.properties` (not committed)
+
+## Conventions
+- Kotlin only, no Java
+- Coroutines + Flow, never RxJava
+- State exposed as StateFlow<UiState>
+- Write tests in the same module under src/test
+- Run `./gradlew detekt` before committing
+
+## Testing Conventions
+- Use Mockk for mocking (never Mockito)
+- ViewModel tests use `TestCoroutineDispatcher` / `UnconfinedTestDispatcher`
+- Use `turbine` for Flow/StateFlow assertions if available, otherwise `toList()`
+- Domain layer tests should have zero Android dependencies — pure JUnit4
+- Aim for: one test class per use case, one per ViewModel
+
+## Before Writing Code
+1. Check existing modules — don't create new ones without confirming
+2. Run `./gradlew :relevant:module:test` to confirm baseline passes
+3. If the task touches the map or scoring logic, read domain:game carefully first
+
+## Dependencies
+- All dependencies are managed via `libs.versions.toml` (version catalog)
+- Never hardcode version strings in build.gradle.kts files
+- To add a dependency: add to libs.versions.toml first, then reference via `libs.*` alias
+
+## What NOT to do
+- Don't add dependencies without checking existing ones first
+- Don't modify :core:ui components without flagging it
+- Don't use LiveData
+
+## Local Config
+`local.properties` contains (never commit these):
+- `FLICKR_API_KEY` — accessed via BuildConfig.FLICKR_API_KEY
+- `BENHIKES_BASE_URL` — base URL for the custom API
