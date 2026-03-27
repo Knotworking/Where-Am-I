@@ -29,10 +29,6 @@ class GameViewModelTest {
 
     private val mockPhoto = Photo(
         id = "1",
-        owner = "owner",
-        secret = "secret",
-        server = "server",
-        farm = 1,
         title = "title",
         latitude = 10.0,
         longitude = 10.0,
@@ -90,7 +86,7 @@ class GameViewModelTest {
 
     @Test
     fun `isGameOver set to true after 5 rounds`() {
-        for (i in 1 until GameViewModel.TOTAL_ROUNDS) {
+        (1 until GameViewModel.TOTAL_ROUNDS).forEach { _ ->
             viewModel.nextRound()
         }
         assertEquals(5, viewModel.uiState.value.currentRound)

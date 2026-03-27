@@ -45,21 +45,6 @@ app → feature:* → domain:* ← data:* ← core:network
 - Moshi + KSP for JSON deserialization (DTOs live in `data:photo`)
 - DataStore (not SharedPreferences) for settings persistence
 
-## Key Libraries
-
-| Purpose | Library |
-|---|---|
-| UI | Jetpack Compose + Material3 |
-| Navigation | Navigation Compose |
-| DI | Hilt 2.59.2 |
-| Networking | Retrofit + OkHttp 4.10 |
-| JSON | Moshi 1.15.2 (KSP codegen) |
-| Image loading | Coil Compose |
-| Maps | Maps Compose + Google Play Services |
-| Settings | DataStore Preferences |
-| Testing | JUnit4, Mockk, Coroutines Test |
-| Code gen | KSP 2.3.5 |
-
 ## Module Dependency Rules
 
 - `domain:*` modules are pure Kotlin — never add Android or Hilt dependencies there
@@ -71,15 +56,7 @@ app → feature:* → domain:* ← data:* ← core:network
 - Kotlin only, no Java
 - Coroutines + Flow, never RxJava
 - State exposed as StateFlow<UiState>
-- Write tests in the same module under src/test
 - Run `./gradlew detekt` before committing
-
-## Testing Conventions
-- Use Mockk for mocking (never Mockito)
-- ViewModel tests use `TestCoroutineDispatcher` / `UnconfinedTestDispatcher`
-- Use `turbine` for Flow/StateFlow assertions if available, otherwise `toList()`
-- Domain layer tests should have zero Android dependencies — pure JUnit4
-- Aim for: one test class per use case, one per ViewModel
 
 ## Before Writing Code
 1. Check existing modules — don't create new ones without confirming
