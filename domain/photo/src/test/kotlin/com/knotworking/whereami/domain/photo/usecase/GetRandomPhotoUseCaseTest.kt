@@ -1,34 +1,34 @@
 package com.knotworking.whereami.domain.photo.usecase
 
-import com.knotworking.whereami.domain.photo.repository.PhotoRepository
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
+import com.knotworking.whereami.domain.photo.FakePhotoRepository
 import com.knotworking.whereami.domain.photo.model.Photo
-import io.mockk.coEvery
-import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.Test
 
 class GetRandomPhotoUseCaseTest {
 
-    private val photoRepository: PhotoRepository = mockk()
+    private val photoRepository = FakePhotoRepository()
     private val getRandomPhotoUseCase = GetRandomPhotoUseCase(photoRepository)
 
     @Test
-    fun `invoke returns photo from repository`() = runBlocking {
+    fun `invoke returns photo from repository`() = runTest {
         val mockPhoto = Photo("1", "o", 0.0, 0.0, "t")
-        coEvery { photoRepository.getRandomGeotaggedPhoto() } returns mockPhoto
+        photoRepository.nextPhoto = mockPhoto
 
         val result = getRandomPhotoUseCase()
 
-        assertEquals(mockPhoto, result)
+        assertThat(result).isEqualTo(mockPhoto)
     }
 
     @Test
-    fun `invoke returns null when repository returns no photo`() = runBlocking {
-        coEvery { photoRepository.getRandomGeotaggedPhoto() } returns null
+    fun `invoke returns null when repository returns no photo`() = runTest {
+        photoRepository.nextPhoto = null
 
         val result = getRandomPhotoUseCase()
 
-        assertEquals(null, result)
+        assertThat(result).isNull()
     }
 }
