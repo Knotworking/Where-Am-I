@@ -47,7 +47,7 @@ dependencies {
     testImplementation(libs.junit5.api)
     testRuntimeOnly(libs.junit5.engine)
     testRuntimeOnly(libs.junit5.launcher)
-    testImplementation(libs.mockk)
+    testImplementation(testFixtures(project(":domain:photo")))
     testImplementation(libs.assertk)
     testImplementation(libs.turbine)
     testImplementation(libs.kotlinx.coroutines.test)

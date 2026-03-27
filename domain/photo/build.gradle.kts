@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.jetbrains.kotlin.jvm)
+    `java-test-fixtures`
 }
 
 java {
@@ -15,6 +16,8 @@ dependencies {
     implementation(libs.javax.inject)
     implementation(libs.kotlinx.coroutines.core)
     
+    testFixturesImplementation(libs.kotlinx.coroutines.core)
+
     testImplementation(libs.junit5.api)
     testRuntimeOnly(libs.junit5.engine)
     testRuntimeOnly(libs.junit5.launcher)
