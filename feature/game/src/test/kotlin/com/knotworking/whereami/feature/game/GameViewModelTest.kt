@@ -75,7 +75,7 @@ class GameViewModelTest {
         assertThat(state.totalScore).isEqualTo(4000)
         assertThat(state.guesses).hasSize(1)
         assertThat(state.lastGuess).isNotNull()
-        assertThat(state.lastGuess?.score).isEqualTo(4000)
+        assertThat(state.lastGuess!!.score).isEqualTo(4000)
     }
 
     @Test

@@ -13,13 +13,14 @@ description: |
 
 ## Stack
 
-| Concern | Library |
-|---|---|
-| Test framework | JUnit5 |
-| Assertions | AssertK |
-| Flow / StateFlow testing | Turbine |
-| Coroutine testing | `kotlinx-coroutines-test` + `UnconfinedTestDispatcher` |
-| UI testing | `ComposeTestRule` |
+| Concern                  | Library                                                |
+|--------------------------|--------------------------------------------------------|
+| Test framework           | JUnit5                                                 |
+| Assertions               | AssertK                                                |
+| Flow / StateFlow testing | Turbine                                                |
+| Coroutine testing        | `kotlinx-coroutines-test` + `UnconfinedTestDispatcher` |
+| UI testing               | `ComposeTestRule`                                      |
+
  
 ---
 
@@ -30,12 +31,12 @@ description: |
 ```kotlin
 class NoteListViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
- 
+
     @BeforeEach
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
     }
- 
+
     @AfterEach
     fun tearDown() {
         Dispatchers.resetMain()
@@ -48,15 +49,15 @@ class NoteListViewModelTest {
 ```kotlin
 @Test
 fun `loading notes emits notes in state`() = runTest {
-    val repo = FakeNoteRepository()
-    val viewModel = NoteListViewModel(repo)
- 
-    viewModel.state.test {
-        viewModel.onAction(NoteListAction.OnRefreshClick)
-        assertThat(awaitItem().isLoading).isTrue()
-        assertThat(awaitItem().notes).isNotEmpty()
+        val repo = FakeNoteRepository()
+        val viewModel = NoteListViewModel(repo)
+
+        viewModel.state.test {
+            viewModel.onAction(NoteListAction.OnRefreshClick)
+            assertThat(awaitItem().isLoading).isTrue()
+            assertThat(awaitItem().notes).isNotEmpty()
+        }
     }
-}
 ```
 
 ### Testing Events (one-time side effects)
@@ -64,37 +65,40 @@ fun `loading notes emits notes in state`() = runTest {
 ```kotlin
 @Test
 fun `clicking note sends NavigateToDetail event`() = runTest {
-    val viewModel = NoteListViewModel(FakeNoteRepository())
- 
-    viewModel.events.test {
-        viewModel.onAction(NoteListAction.OnNoteClick("123"))
-        assertThat(awaitItem()).isEqualTo(NoteListEvent.NavigateToDetail("123"))
+        val viewModel = NoteListViewModel(FakeNoteRepository())
+
+        viewModel.events.test {
+            viewModel.onAction(NoteListAction.OnNoteClick("123"))
+            assertThat(awaitItem()).isEqualTo(NoteListEvent.NavigateToDetail("123"))
+        }
     }
-}
 ```
+
  
 ---
 
 ## Fake Repositories
 
-Prefer **fakes** (not mocks) for repository dependencies. A fake is a simple in-memory implementation:
+Prefer **fakes** (not mocks) for repository dependencies. A fake is a simple in-memory
+implementation:
 
 ```kotlin
 class FakeNoteRepository : NoteRepository {
     private val notes = mutableListOf<Note>()
     var shouldReturnError = false
- 
+
     override suspend fun getNotes(): Result<List<Note>, DataError.Local> {
         return if (shouldReturnError) Result.Error(DataError.Local.UNKNOWN)
         else Result.Success(notes.toList())
     }
- 
+
     override suspend fun insertNote(note: Note): EmptyResult<DataError.Local> {
         notes.add(note)
         return Result.Success(Unit)
     }
 }
 ```
+
  
 ---
 
@@ -106,33 +110,39 @@ Instantiate it directly — no mocking needed:
 val savedStateHandle = SavedStateHandle(mapOf("noteId" to "123"))
 val viewModel = NoteEditorViewModel(savedStateHandle, FakeNoteRepository())
 ```
+
  
 ---
 
 ## When to Inject Dispatchers
 
 Only inject `CoroutineDispatcher` into a class when:
+
 1. It dispatches to a non-main dispatcher (e.g., `IO`), AND
 2. That class is directly unit-tested.
 
-ViewModels that only use `viewModelScope` do not need injected dispatchers. Use `Dispatchers.setMain()` in tests instead.
+ViewModels that only use `viewModelScope` do not need injected dispatchers. Use
+`Dispatchers.setMain()` in tests instead.
 
-If a non-ViewModel class uses `withContext(Dispatchers.IO)` and is unit-tested, inject the dispatcher:
+If a non-ViewModel class uses `withContext(Dispatchers.IO)` and is unit-tested, inject the
+dispatcher:
 
 ```kotlin
 class ImageCompressor(private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO) {
     suspend fun compress(bytes: ByteArray): ByteArray = withContext(ioDispatcher) { ... }
 }
- 
+
 // In test:
 val compressor = ImageCompressor(ioDispatcher = UnconfinedTestDispatcher())
 ```
+
  
 ---
 
 ## Integration and E2E Tests
 
-Write integration tests where database/network interactions are non-trivial. Write E2E tests for complex user flows using `ComposeTestRule`:
+Write integration tests where database/network interactions are non-trivial. Write E2E tests for
+complex user flows using `ComposeTestRule`:
 
 ```kotlin
 @get:Rule
@@ -154,7 +164,9 @@ fun noteList_displaysNotes_afterLoad() {
 
 ## Robot Pattern (Complex UI / E2E Tests)
 
-For complex end-to-end or multi-step UI tests, use the **Robot Pattern** to separate test intent from Compose interactions. A robot encapsulates all `composeTestRule` interactions for a screen, keeping tests readable and DRY.
+For complex end-to-end or multi-step UI tests, use the **Robot Pattern** to separate test intent
+from Compose interactions. A robot encapsulates all `composeTestRule` interactions for a screen,
+keeping tests readable and DRY.
 
 ### Structure
 
@@ -224,7 +236,9 @@ class NoteListScreenTest {
 }
 ```
 
-**When to use:** Apply the robot pattern when a screen has 3+ UI test cases, when multiple tests share the same setup/assertion sequences, or when testing complex multi-step user flows (e.g., fill form → submit → assert result).
+**When to use:** Apply the robot pattern when a screen has 3+ UI test cases, when multiple tests
+share the same setup/assertion sequences, or when testing complex multi-step user flows (e.g., fill
+form → submit → assert result).
  
 ---
 
@@ -236,4 +250,5 @@ class NoteListScreenTest {
 - Use fakes over mocks where possible — fakes are simpler and catch more real bugs.
 - Write integration tests where DB/network interactions are non-trivial.
 - Write E2E Compose tests for critical user flows.
-- Use the robot pattern for complex UI/E2E tests with multiple test cases or shared interaction sequences.
+- Use the robot pattern for complex UI/E2E tests with multiple test cases or shared interaction
+  sequences.

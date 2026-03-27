@@ -19,7 +19,6 @@ dependencies {
     testRuntimeOnly(libs.junit5.engine)
     testRuntimeOnly(libs.junit5.launcher)
     testImplementation(libs.assertk)
-    testImplementation(libs.turbine)
     testImplementation(libs.kotlinx.coroutines.test)
 }
 

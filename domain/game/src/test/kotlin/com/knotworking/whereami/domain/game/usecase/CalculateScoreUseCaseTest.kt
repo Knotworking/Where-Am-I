@@ -1,7 +1,7 @@
 package com.knotworking.whereami.domain.game.usecase
 
 import assertk.assertThat
-import assertk.assertions.isCloseTo
+import assertk.assertions.isBetween
 import assertk.assertions.isEqualTo
 import org.junit.jupiter.api.Test
 
@@ -23,8 +23,10 @@ class CalculateScoreUseCaseTest {
 
     @Test
     fun `score for 1000km is around 3032`() {
+        val targetScore = 3032
+        val acceptedVariance = 3
         val score = calculateScoreUseCase(1000000.0)
-        assertThat(score.toDouble()).isCloseTo(3032.0, 5.0)
+        assertThat(score).isBetween(targetScore - acceptedVariance, targetScore + acceptedVariance)
     }
 
     @Test
