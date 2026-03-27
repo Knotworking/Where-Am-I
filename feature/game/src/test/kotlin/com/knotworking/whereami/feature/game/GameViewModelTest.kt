@@ -1,5 +1,11 @@
 package com.knotworking.whereami.feature.game
 
+import assertk.assertThat
+import assertk.assertions.hasSize
+import assertk.assertions.isFalse
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
+import assertk.assertions.isTrue
 import com.knotworking.whereami.domain.game.usecase.CalculateDistanceUseCase
 import com.knotworking.whereami.domain.game.usecase.CalculateScoreUseCase
 import com.knotworking.whereami.domain.photo.usecase.GetRandomPhotoUseCase
@@ -9,13 +15,12 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.*
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 @ExperimentalCoroutinesApi
 class GameViewModelTest {
@@ -35,7 +40,7 @@ class GameViewModelTest {
         urlM = "url"
     )
 
-    @Before
+    @BeforeEach
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         coEvery { getRandomPhotoUseCase() } returns mockPhoto
@@ -46,7 +51,7 @@ class GameViewModelTest {
         )
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         Dispatchers.resetMain()
     }
@@ -54,9 +59,9 @@ class GameViewModelTest {
     @Test
     fun `initial state loads first round`() {
         val state = viewModel.uiState.value
-        assertEquals(1, state.currentRound)
-        assertEquals(mockPhoto, state.currentPhoto)
-        assertFalse(state.isLoading)
+        assertThat(state.currentRound).isEqualTo(1)
+        assertThat(state.currentPhoto).isEqualTo(mockPhoto)
+        assertThat(state.isLoading).isFalse()
     }
 
     @Test
@@ -67,9 +72,10 @@ class GameViewModelTest {
         viewModel.submitGuess(11.0, 11.0)
 
         val state = viewModel.uiState.value
-        assertEquals(4000, state.totalScore)
-        assertEquals(1, state.guesses.size)
-        assertEquals(4000, state.lastGuess?.score)
+        assertThat(state.totalScore).isEqualTo(4000)
+        assertThat(state.guesses).hasSize(1)
+        assertThat(state.lastGuess).isNotNull()
+        assertThat(state.lastGuess?.score).isEqualTo(4000)
     }
 
     @Test
@@ -80,8 +86,8 @@ class GameViewModelTest {
         viewModel.nextRound()
 
         val state = viewModel.uiState.value
-        assertEquals(2, state.currentRound)
-        assertEquals(nextPhoto, state.currentPhoto)
+        assertThat(state.currentRound).isEqualTo(2)
+        assertThat(state.currentPhoto).isEqualTo(nextPhoto)
     }
 
     @Test
@@ -89,10 +95,10 @@ class GameViewModelTest {
         (1 until GameViewModel.TOTAL_ROUNDS).forEach { _ ->
             viewModel.nextRound()
         }
-        assertEquals(5, viewModel.uiState.value.currentRound)
-        assertFalse(viewModel.uiState.value.isGameOver)
+        assertThat(viewModel.uiState.value.currentRound).isEqualTo(5)
+        assertThat(viewModel.uiState.value.isGameOver).isFalse()
 
         viewModel.nextRound()
-        assertTrue(viewModel.uiState.value.isGameOver)
+        assertThat(viewModel.uiState.value.isGameOver).isTrue()
     }
 }
