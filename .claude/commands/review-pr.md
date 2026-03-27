@@ -10,3 +10,6 @@ You have full context of this project from CLAUDE.md. Analyse the diff against t
 6. **Test coverage** — are new use cases or ViewModels tested?
 
 Flag issues as HIGH / MEDIUM / LOW. Skip LOW if there are more than 5 issues total.
+
+For each issue found, post an inline review comment on the specific line using the GitHub MCP. 
+When done, submit the review with overall status COMMENT (not APPROVE or REQUEST_CHANGES).
