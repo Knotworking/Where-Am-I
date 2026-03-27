@@ -58,6 +58,17 @@ app → feature:* → domain:* ← data:* ← core:network
 - State exposed as StateFlow<UiState>
 - Run `./gradlew detekt` before committing
 
+## Git Workflow
+When working on a task:
+- Commit after each logical unit of work (a passing test, a completed
+  function, a working module)
+- Commit messages: imperative mood, max 72 chars, reference what changed
+  and why e.g. "Add error state to GameViewModel for network failures"
+- Never commit broken code — run `./gradlew :relevant:module:test` first
+- Never commit to main — always work on a feature branch
+- Do not push unless explicitly asked
+- Do not create a PR unless explicitly asked
+
 ## Before Writing Code
 1. Check existing modules — don't create new ones without confirming
 2. Run `./gradlew :relevant:module:test` to confirm baseline passes
