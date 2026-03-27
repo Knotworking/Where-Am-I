@@ -9,8 +9,6 @@
       "Bash(adb logcat *)"
     ],
     "deny": [
-      "Bash(git push *)",
-      "Bash(rm -rf *)",
       "Read(.env*)"
     ]
   }
