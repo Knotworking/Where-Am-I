@@ -5,8 +5,8 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class BenHikesPhotoDto(
-    @Json(name = "url") val url: String,
-    @Json(name = "filename") val filename: String,
-    @Json(name = "lat") val lat: Double,
-    @Json(name = "lng") val lng: Double
+    @field:Json(name = "url") val url: String,
+    @field:Json(name = "filename") val filename: String,
+    @field:Json(name = "lat") val lat: Double,
+    @field:Json(name = "lng") val lng: Double
 )
