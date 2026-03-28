@@ -20,6 +20,8 @@ android {
 
         val flickrKey = localProps.getProperty("FLICKR_API_KEY") ?: ""
         buildConfigField("String", "FLICKR_API_KEY", "\"$flickrKey\"")
+        val benHikesBaseUrl = localProps.getProperty("BENHIKES_BASE_URL") ?: ""
+        buildConfigField("String", "BENHIKES_BASE_URL", "\"$benHikesBaseUrl\"")
     }
 
     buildFeatures {

@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+private const val SUBSCRIBE_TIMEOUT_MS = 5000L
+
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     getPhotoSourceUseCase: GetPhotoSourceUseCase,
@@ -23,7 +25,7 @@ class SettingsViewModel @Inject constructor(
         .map { SettingsUiState(photoSource = it) }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.WhileSubscribed(SUBSCRIBE_TIMEOUT_MS),
             initialValue = SettingsUiState()
         )
 

@@ -5,7 +5,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.knotworking.whereami.feature.game.GameScreenRoot
-import com.knotworking.whereami.feature.settings.SettingsScreen
 import com.knotworking.whereami.feature.settings.SettingsScreenRoot
 
 @Composable

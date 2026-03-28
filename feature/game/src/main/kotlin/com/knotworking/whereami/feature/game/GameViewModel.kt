@@ -53,12 +53,18 @@ class GameViewModel @Inject constructor(
             try {
                 val photo = getRandomPhotoUseCase()
                 if (photo != null) {
-                    _uiState.update { it.copy(isLoading = false, isPhotoLoading = false, currentPhoto = photo) }
+                    _uiState.update {
+                        it.copy(isLoading = false, isPhotoLoading = false, currentPhoto = photo)
+                    }
                 } else {
-                    _uiState.update { it.copy(isLoading = false, isPhotoLoading = false, error = "Failed to load photo") }
+                    _uiState.update {
+                        it.copy(isLoading = false, isPhotoLoading = false, error = "Failed to load photo")
+                    }
                 }
             } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, isPhotoLoading = false, error = e.message ?: "Unknown error") }
+                _uiState.update {
+                    it.copy(isLoading = false, isPhotoLoading = false, error = e.message ?: "Unknown error")
+                }
             }
         }
     }

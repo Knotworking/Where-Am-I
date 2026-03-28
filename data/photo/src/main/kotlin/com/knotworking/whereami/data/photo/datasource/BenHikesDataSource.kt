@@ -1,7 +1,10 @@
 package com.knotworking.whereami.data.photo.datasource
 
+import android.util.Log
 import com.knotworking.whereami.data.photo.datasource.api.BenHikesApi
 import com.knotworking.whereami.domain.photo.model.Photo
+import retrofit2.HttpException
+import java.io.IOException
 import javax.inject.Inject
 
 class BenHikesDataSource @Inject constructor(
@@ -22,10 +25,16 @@ class BenHikesDataSource @Inject constructor(
                         urlM = dto.url
                     )
                 )
-            } catch (e: Exception) {
-                // handle or log error
+            } catch (e: IOException) {
+                Log.w(TAG, "Network error fetching photo", e)
+            } catch (e: HttpException) {
+                Log.w(TAG, "HTTP ${e.code()} error fetching photo", e)
             }
         }
         return photos
+    }
+
+    companion object {
+        private const val TAG = "BenHikesDataSource"
     }
 }

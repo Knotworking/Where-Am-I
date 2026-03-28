@@ -17,6 +17,7 @@ complexity:
 
 style:
   MagicNumber:
+    ignorePropertyDeclaration: true
     ignoreNumbers:
       - '-1'
       - '0'

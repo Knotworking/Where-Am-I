@@ -61,7 +61,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -76,6 +76,11 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.knotworking.whereami.domain.game.model.Guess
 import com.knotworking.whereami.domain.photo.model.Photo
 import java.util.Locale
+
+private const val PHOTO_OVERLAY_WIDTH_FRACTION = 0.9f
+private const val PHOTO_OVERLAY_HEIGHT_FRACTION = 0.7f
+private const val PHOTO_MAX_ZOOM_SCALE = 5f
+private const val METERS_PER_KM = 1000.0
 
 @Composable
 fun GameScreenRoot(
@@ -334,8 +339,8 @@ private fun PhotoOverlay(
     ) {
         BoxWithConstraints(
             modifier = Modifier
-                .fillMaxWidth(0.9f)
-                .fillMaxHeight(0.7f)
+                .fillMaxWidth(PHOTO_OVERLAY_WIDTH_FRACTION)
+                .fillMaxHeight(PHOTO_OVERLAY_HEIGHT_FRACTION)
                 .clip(RoundedCornerShape(24.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant),
             contentAlignment = Alignment.Center
@@ -349,7 +354,7 @@ private fun PhotoOverlay(
                     .clipToBounds()
                     .pointerInput(photo) {
                         detectTransformGestures { _, pan, zoom, _ ->
-                            scale = (scale * zoom).coerceIn(1f, 5f)
+                            scale = (scale * zoom).coerceIn(1f, PHOTO_MAX_ZOOM_SCALE)
 
                             val extraWidth = (scale - 1) * maxWidth
                             val extraHeight = (scale - 1) * maxHeight
@@ -531,7 +536,7 @@ private fun ScoreOverlay(
                 fontWeight = FontWeight.ExtraBold,
                 color = MaterialTheme.colorScheme.primary
             )
-            val distanceKm = guess.distanceMeters / 1000.0
+            val distanceKm = guess.distanceMeters / METERS_PER_KM
             Text(
                 text = "You were " + String.format(
                     Locale.getDefault(),
