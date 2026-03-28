@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 class FlickrDataSource @Inject constructor(
     private val flickrApi: FlickrApi,
-    @field:FlickrApiKey private val apiKey: String
+    @param:FlickrApiKey private val apiKey: String
 ) : RemotePhotoDataSource {
     
     override suspend fun fetchPhotos(count: Int): List<Photo> {
