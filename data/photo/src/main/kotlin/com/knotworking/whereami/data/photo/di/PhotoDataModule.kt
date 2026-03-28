@@ -39,7 +39,7 @@ object PhotoDataModule {
     @Singleton
     fun provideBenHikesService(moshi: Moshi, okHttpClient: OkHttpClient): BenHikesApi {
         return Retrofit.Builder()
-            .baseUrl("https://benhikes.eu/")
+            .baseUrl(BuildConfig.BENHIKES_BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
