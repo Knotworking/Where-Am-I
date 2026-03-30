@@ -9,6 +9,7 @@ import assertk.assertions.isNotNull
 import assertk.assertions.isTrue
 import com.knotworking.whereami.core.domain.DataError
 import com.knotworking.whereami.domain.game.usecase.CalculateDistanceUseCase
+import com.knotworking.whereami.domain.photo.model.PhotoError
 import com.knotworking.whereami.domain.game.usecase.CalculateScoreUseCase
 import com.knotworking.whereami.domain.photo.FakePhotoRepository
 import com.knotworking.whereami.domain.photo.usecase.GetRandomPhotoUseCase
@@ -115,7 +116,7 @@ class GameViewModelTest {
 
     @Test
     fun `loadNextRound with no photo sets NoPhotoAvailable`() = runTest {
-        fakePhotoRepository.setError(DataError.Network.NOT_FOUND)
+        fakePhotoRepository.setError(PhotoError.NO_PHOTO_FOUND)
         viewModel = GameViewModel(getRandomPhotoUseCase, calculateDistanceUseCase, calculateScoreUseCase)
 
         viewModel.uiState.test {

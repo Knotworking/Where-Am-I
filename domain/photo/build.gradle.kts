@@ -17,6 +17,7 @@ dependencies {
     implementation(libs.javax.inject)
     implementation(libs.kotlinx.coroutines.core)
     
+    testFixturesImplementation(project(":core:domain"))
     testFixturesImplementation(libs.kotlinx.coroutines.core)
 
     testImplementation(libs.junit5.api)
