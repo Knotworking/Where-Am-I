@@ -7,6 +7,7 @@ import com.knotworking.whereami.core.domain.Result
 import com.knotworking.whereami.domain.game.model.Guess
 import com.knotworking.whereami.domain.game.usecase.CalculateDistanceUseCase
 import com.knotworking.whereami.domain.game.usecase.CalculateScoreUseCase
+import com.knotworking.whereami.domain.photo.model.PhotoError
 import com.knotworking.whereami.domain.photo.usecase.GetRandomPhotoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,8 +59,8 @@ class GameViewModel @Inject constructor(
                 }
                 is Result.Error -> {
                     val gameError = when (result.error) {
-                        DataError.Network.NOT_FOUND -> GameError.NoPhotoAvailable
-                        DataError.Network.NO_INTERNET -> GameError.NetworkError
+                        PhotoError.NO_PHOTO_FOUND -> GameError.NoPhotoAvailable
+                        is DataError.Network -> GameError.NetworkError
                         else -> GameError.Unknown
                     }
                     _uiState.update {

@@ -8,16 +8,14 @@ class BenHikesDataSource @Inject constructor(
     private val benHikesApi: BenHikesApi
 ) : RemotePhotoDataSource {
 
-    override suspend fun fetchPhotos(count: Int): List<Photo> {
+    override suspend fun fetchPhoto(): Photo {
         val dto = benHikesApi.getRandomPhoto()
-        return listOf(
-            Photo(
-                id = dto.filename,
-                title = dto.filename,
-                latitude = dto.lat,
-                longitude = dto.lng,
-                urlM = dto.url
-            )
+        return Photo(
+            id = dto.filename,
+            title = dto.filename,
+            latitude = dto.lat,
+            longitude = dto.lng,
+            urlM = dto.url
         )
     }
 }

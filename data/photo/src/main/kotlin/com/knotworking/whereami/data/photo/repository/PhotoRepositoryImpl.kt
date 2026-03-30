@@ -5,10 +5,12 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.knotworking.whereami.core.domain.DataError
+import com.knotworking.whereami.core.domain.Error
 import com.knotworking.whereami.core.domain.Result
 import com.knotworking.whereami.data.photo.datasource.BenHikesDataSource
 import com.knotworking.whereami.data.photo.datasource.FlickrDataSource
 import com.knotworking.whereami.domain.photo.model.Photo
+import com.knotworking.whereami.domain.photo.model.PhotoError
 import com.knotworking.whereami.domain.photo.model.PhotoSource
 import com.knotworking.whereami.domain.photo.repository.PhotoRepository
 import kotlinx.coroutines.flow.Flow
@@ -39,15 +41,15 @@ class PhotoRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getRandomGeotaggedPhoto(): Result<Photo, DataError.Network> {
+    override suspend fun getRandomGeotaggedPhoto(): Result<Photo, Error> {
         return try {
             val source = getPhotoSource().first()
             val dataSource = when (source) {
                 PhotoSource.FLICKR -> flickrDataSource
                 PhotoSource.BENHIKES -> benHikesDataSource
             }
-            val photo = dataSource.fetchPhotos(1).firstOrNull()
-                ?: return Result.Error(DataError.Network.NOT_FOUND)
+            val photo = dataSource.fetchPhoto()
+                ?: return Result.Error(PhotoError.NO_PHOTO_FOUND)
             Result.Success(photo)
         } catch (e: IOException) {
             Result.Error(DataError.Network.NO_INTERNET)
