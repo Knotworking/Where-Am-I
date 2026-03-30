@@ -144,13 +144,13 @@ The layer that owns the exception catches it and converts it to a typed `Result.
 
 Every error type that is displayed to the user should have a `.toUiText()` extension function. Place it in:
 
-- **Feature's `presentation` module** — if the error is feature-specific (e.g., `AuthError.toUiText()`)
-- **`core:presentation`** — if the error is shared across features (e.g., `DataError.toUiText()`)
+- **Feature's `ui` module** — if the error is feature-specific (e.g., `AuthError.toUiText()`)
+- **`core:ui`** — if the error is shared across features (e.g., `DataError.toUiText()`)
 
 If an error is purely internal and never shown to the user (e.g., a retry signal, an internal state marker), it does not need a `.toUiText()` mapping.
 
 ```kotlin
-// core:presentation
+// core:ui
 fun DataError.toUiText(): UiText {
     return when (this) {
         DataError.Network.NO_INTERNET -> UiText.StringResource(R.string.error_no_internet)
@@ -165,7 +165,7 @@ fun DataError.toUiText(): UiText {
 
 ---
 
-## Safe Call Helpers (`core:data`)
+## Safe Call Helpers (`core:network`)
 
 Typed extension functions on `HttpClient` that wrap Ktor calls and map HTTP responses to `Result<T, DataError.Network>`:
 
