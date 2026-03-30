@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -51,10 +52,10 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Settings") },
+                title = { Text(stringResource(R.string.settings_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.settings_back))
                     }
                 }
             )
@@ -67,7 +68,7 @@ fun SettingsScreen(
                 .padding(16.dp)
         ) {
             Text(
-                text = "Photo Source",
+                text = stringResource(R.string.settings_photo_source),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -92,8 +93,8 @@ fun SettingsScreen(
                         )
                         Text(
                             text = when (source) {
-                                PhotoSource.FLICKR -> "Flickr"
-                                PhotoSource.BENHIKES -> "BenHikes"
+                                PhotoSource.FLICKR -> stringResource(R.string.settings_source_flickr)
+                                PhotoSource.BENHIKES -> stringResource(R.string.settings_source_benhikes)
                             },
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.padding(start = 16.dp)

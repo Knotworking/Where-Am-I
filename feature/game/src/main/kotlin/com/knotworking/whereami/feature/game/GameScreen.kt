@@ -54,6 +54,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -61,6 +62,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.knotworking.whereami.core.ui.asString
 import coil3.compose.AsyncImage
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -75,7 +77,6 @@ import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.knotworking.whereami.domain.game.model.Guess
 import com.knotworking.whereami.domain.photo.model.Photo
-import java.util.Locale
 
 private const val PHOTO_OVERLAY_WIDTH_FRACTION = 0.9f
 private const val PHOTO_OVERLAY_HEIGHT_FRACTION = 0.7f
@@ -115,11 +116,7 @@ fun GameScreen(
         when {
             uiState.isLoading -> LoadingView()
             uiState.error != null -> ErrorView(
-                message = when (uiState.error) {
-                    GameError.NetworkError -> "Could not reach the server. Check your connection."
-                    GameError.NoPhotoAvailable -> "No photos available right now. Try again later."
-                    GameError.Unknown -> "Something went wrong."
-                },
+                message = uiState.error.toUiText().asString(),
                 onRetry = onStartNewGame
             )
 
@@ -158,7 +155,7 @@ private fun ErrorView(message: String, onRetry: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Oops!",
+            text = stringResource(R.string.error_oops),
             style = MaterialTheme.typography.displaySmall,
             fontWeight = FontWeight.Bold
         )
@@ -178,7 +175,7 @@ private fun ErrorView(message: String, onRetry: () -> Unit) {
         ) {
             Icon(Icons.Default.Refresh, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Try Again")
+            Text(stringResource(R.string.error_try_again))
         }
     }
 }
@@ -193,14 +190,14 @@ private fun GameOverView(totalScore: Int, onRestart: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Game Finished!",
+            text = stringResource(R.string.game_finished),
             style = MaterialTheme.typography.displaySmall,
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.ExtraBold
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Your Total Score",
+            text = stringResource(R.string.game_your_total_score),
             style = MaterialTheme.typography.bodyLarge
         )
         Text(
@@ -216,7 +213,7 @@ private fun GameOverView(totalScore: Int, onRestart: () -> Unit) {
                 .fillMaxWidth(),
             shape = RoundedCornerShape(32.dp)
         ) {
-            Text("Start New Game", fontSize = 20.sp)
+            Text(stringResource(R.string.game_start_new), fontSize = 20.sp)
         }
     }
 }
@@ -255,7 +252,7 @@ private fun RoundView(
             selectedLocation?.let {
                 Marker(
                     state = MarkerState(position = it),
-                    title = "Your Guess"
+                    title = stringResource(R.string.game_your_guess)
                 )
             }
 
@@ -265,7 +262,7 @@ private fun RoundView(
 
                 Marker(
                     state = MarkerState(position = actual),
-                    title = "Actual Location",
+                    title = stringResource(R.string.game_actual_location),
                     icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
                 )
 
@@ -408,7 +405,7 @@ private fun PhotoOverlay(
             ) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "Hide",
+                    contentDescription = stringResource(R.string.game_hide_photo),
                     modifier = Modifier
                         .padding(8.dp)
                         .size(20.dp)
@@ -440,10 +437,10 @@ private fun TopControls(
                     containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
                 )
             ) {
-                Icon(Icons.Default.Settings, contentDescription = "Settings")
+                Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.game_settings))
             }
             Spacer(modifier = Modifier.width(8.dp))
-            InfoChip(text = "$currentRound/$totalRounds")
+            InfoChip(text = stringResource(R.string.game_round_counter, currentRound, totalRounds))
         }
 
         if (!isPhotoVisible) {
@@ -454,7 +451,7 @@ private fun TopControls(
                 tonalElevation = 4.dp
             ) {
                 Text(
-                    text = "VIEW PHOTO",
+                    text = stringResource(R.string.game_view_photo),
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.ExtraBold,
@@ -463,7 +460,7 @@ private fun TopControls(
             }
         }
 
-        InfoChip(text = "Score: $totalScore")
+        InfoChip(text = stringResource(R.string.game_score_chip, totalScore))
     }
 }
 
@@ -496,7 +493,7 @@ private fun BottomControls(
                     shape = RoundedCornerShape(32.dp),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp)
                 ) {
-                    Text("Submit Guess", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.game_submit_guess), fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 }
             }
 
@@ -535,18 +532,14 @@ private fun ScoreOverlay(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Round Score: " + guess.score,
+                text = stringResource(R.string.game_round_score, guess.score),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.ExtraBold,
                 color = MaterialTheme.colorScheme.primary
             )
             val distanceKm = guess.distanceMeters / METERS_PER_KM
             Text(
-                text = "You were " + String.format(
-                    Locale.getDefault(),
-                    "%.2f",
-                    distanceKm
-                ) + " km away",
+                text = stringResource(R.string.game_distance_km, distanceKm),
                 style = MaterialTheme.typography.bodyLarge
             )
             Spacer(modifier = Modifier.height(20.dp))
@@ -558,7 +551,7 @@ private fun ScoreOverlay(
                 shape = RoundedCornerShape(28.dp)
             ) {
                 Text(
-                    text = if (!isLastRound) "Next Round" else "View Results",
+                    text = stringResource(if (!isLastRound) R.string.game_next_round else R.string.game_view_results),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
