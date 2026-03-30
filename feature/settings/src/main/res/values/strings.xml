@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Settings</string>
+    <string name="settings_back">Back</string>
+    <string name="settings_photo_source">Photo Source</string>
+    <string name="settings_source_flickr">Flickr</string>
+    <string name="settings_source_benhikes">BenHikes</string>
+</resources>
