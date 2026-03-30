@@ -2,10 +2,12 @@ package com.knotworking.whereami.feature.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.knotworking.whereami.core.domain.DataError
+import com.knotworking.whereami.core.domain.Result
+import com.knotworking.whereami.domain.game.model.Guess
 import com.knotworking.whereami.domain.game.usecase.CalculateDistanceUseCase
 import com.knotworking.whereami.domain.game.usecase.CalculateScoreUseCase
 import com.knotworking.whereami.domain.photo.usecase.GetRandomPhotoUseCase
-import com.knotworking.whereami.domain.game.model.Guess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -50,20 +52,19 @@ class GameViewModel @Inject constructor(
     private fun loadNextRound() {
         viewModelScope.launch {
             _uiState.update { it.copy(isPhotoLoading = true, error = null, currentPhoto = null) }
-            try {
-                val photo = getRandomPhotoUseCase()
-                if (photo != null) {
-                    _uiState.update {
-                        it.copy(isLoading = false, isPhotoLoading = false, currentPhoto = photo)
-                    }
-                } else {
-                    _uiState.update {
-                        it.copy(isLoading = false, isPhotoLoading = false, error = "Failed to load photo")
-                    }
+            when (val result = getRandomPhotoUseCase()) {
+                is Result.Success -> _uiState.update {
+                    it.copy(isLoading = false, isPhotoLoading = false, currentPhoto = result.data)
                 }
-            } catch (e: Exception) {
-                _uiState.update {
-                    it.copy(isLoading = false, isPhotoLoading = false, error = e.message ?: "Unknown error")
+                is Result.Error -> {
+                    val gameError = when (result.error) {
+                        DataError.Network.NOT_FOUND -> GameError.NoPhotoAvailable
+                        DataError.Network.NO_INTERNET -> GameError.NetworkError
+                        else -> GameError.Unknown
+                    }
+                    _uiState.update {
+                        it.copy(isLoading = false, isPhotoLoading = false, error = gameError)
+                    }
                 }
             }
         }

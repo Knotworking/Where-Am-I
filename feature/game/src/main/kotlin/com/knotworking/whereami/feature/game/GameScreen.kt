@@ -115,7 +115,11 @@ fun GameScreen(
         when {
             uiState.isLoading -> LoadingView()
             uiState.error != null -> ErrorView(
-                message = uiState.error,
+                message = when (uiState.error) {
+                    GameError.NetworkError -> "Could not reach the server. Check your connection."
+                    GameError.NoPhotoAvailable -> "No photos available right now. Try again later."
+                    GameError.Unknown -> "Something went wrong."
+                },
                 onRetry = onStartNewGame
             )
 
