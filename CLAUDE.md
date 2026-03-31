@@ -35,14 +35,15 @@ app → feature:* → domain:* ← data:* ← core:network
 - **`feature/game`, `feature/settings`** — MVVM: ViewModel + `UiState` data class + Composable screens
 - **`domain/game`, `domain/photo`** — Pure Kotlin (JVM only, no Android deps). Models, repository interfaces, use cases. Fully unit-testable.
 - **`data/photo`** — `PhotoRepositoryImpl` coordinates `FlickrDataSource` and `BenHikesDataSource`. DataStore for persisting the selected `PhotoSource`.
-- **`core/network`** — Hilt module providing shared OkHttpClient + Moshi
+- **`core/domain`** — Shared domain logic and models used across layers and features.
+- **`core/network`** — Hilt module providing shared OkHttpClient + Moshi. Shared networking helpers.
 - **`core/ui`** — Material3 theme only
 
 **Key patterns:**
 - Hilt DI throughout; ViewModels injected with `@HiltViewModel`
 - StateFlow-based reactive state from ViewModels to Composables
 - Use cases are simple suspending wrappers (single responsibility)
-- Moshi + KSP for JSON deserialization (DTOs live in `data:photo`)
+- Moshi + KSP for JSON deserialization (DTOs live in `data:feature` modules)
 - DataStore (not SharedPreferences) for settings persistence
 
 ## Module Dependency Rules

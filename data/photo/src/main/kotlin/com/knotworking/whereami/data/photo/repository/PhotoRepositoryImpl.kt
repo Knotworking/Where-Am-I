@@ -30,7 +30,7 @@ class PhotoRepositoryImpl @Inject constructor(
 
     override fun getPhotoSource(): Flow<PhotoSource> = dataStore.data.map { preferences ->
         val sourceName = preferences[PreferencesKeys.PHOTO_SOURCE] ?: PhotoSource.BENHIKES.name
-        PhotoSource.valueOf(sourceName)
+        PhotoSource.entries.find { it.name == sourceName } ?: PhotoSource.BENHIKES
     }
 
     override suspend fun setPhotoSource(source: PhotoSource) {
