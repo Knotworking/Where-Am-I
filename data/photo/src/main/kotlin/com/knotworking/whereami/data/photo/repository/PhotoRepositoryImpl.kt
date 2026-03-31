@@ -4,9 +4,13 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.knotworking.whereami.core.domain.Error
+import com.knotworking.whereami.core.domain.Result
+import com.knotworking.whereami.core.network.safeCall
 import com.knotworking.whereami.data.photo.datasource.BenHikesDataSource
 import com.knotworking.whereami.data.photo.datasource.FlickrDataSource
 import com.knotworking.whereami.domain.photo.model.Photo
+import com.knotworking.whereami.domain.photo.model.PhotoError
 import com.knotworking.whereami.domain.photo.model.PhotoSource
 import com.knotworking.whereami.domain.photo.repository.PhotoRepository
 import kotlinx.coroutines.flow.Flow
@@ -26,7 +30,7 @@ class PhotoRepositoryImpl @Inject constructor(
 
     override fun getPhotoSource(): Flow<PhotoSource> = dataStore.data.map { preferences ->
         val sourceName = preferences[PreferencesKeys.PHOTO_SOURCE] ?: PhotoSource.BENHIKES.name
-        PhotoSource.valueOf(sourceName)
+        PhotoSource.entries.find { it.name == sourceName } ?: PhotoSource.BENHIKES
     }
 
     override suspend fun setPhotoSource(source: PhotoSource) {
@@ -35,12 +39,16 @@ class PhotoRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getRandomGeotaggedPhoto(): Photo? {
+    override suspend fun getRandomGeotaggedPhoto(): Result<Photo, Error> {
         val source = getPhotoSource().first()
         val dataSource = when (source) {
             PhotoSource.FLICKR -> flickrDataSource
             PhotoSource.BENHIKES -> benHikesDataSource
         }
-        return dataSource.fetchPhotos(1).firstOrNull()
+        return when (val result = safeCall { dataSource.fetchPhoto() }) {
+            is Result.Success -> result.data?.let { Result.Success(it) }
+                ?: Result.Error(PhotoError.NO_PHOTO_FOUND)
+            is Result.Error -> result
+        }
     }
 }

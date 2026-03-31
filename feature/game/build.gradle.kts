@@ -28,6 +28,7 @@ dependencies {
     implementation(project(":domain:photo"))
     implementation(project(":domain:game"))
     implementation(project(":core:ui"))
+    implementation(project(":core:domain"))
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

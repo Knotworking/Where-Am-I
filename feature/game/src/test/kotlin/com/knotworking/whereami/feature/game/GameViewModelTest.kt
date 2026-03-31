@@ -7,7 +7,9 @@ import assertk.assertions.isFalse
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isTrue
+import com.knotworking.whereami.core.domain.DataError
 import com.knotworking.whereami.domain.game.usecase.CalculateDistanceUseCase
+import com.knotworking.whereami.domain.photo.model.PhotoError
 import com.knotworking.whereami.domain.game.usecase.CalculateScoreUseCase
 import com.knotworking.whereami.domain.photo.FakePhotoRepository
 import com.knotworking.whereami.domain.photo.usecase.GetRandomPhotoUseCase
@@ -43,7 +45,7 @@ class GameViewModelTest {
     @BeforeEach
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        fakePhotoRepository.nextPhoto = testPhoto
+        fakePhotoRepository.setNextPhoto(testPhoto)
         viewModel = GameViewModel(
             getRandomPhotoUseCase,
             calculateDistanceUseCase,
@@ -92,11 +94,35 @@ class GameViewModelTest {
 
         viewModel.uiState.test {
             awaitItem() // initial state
-            fakePhotoRepository.nextPhoto = nextPhoto
+            fakePhotoRepository.setNextPhoto(nextPhoto)
             viewModel.nextRound()
             val state = expectMostRecentItem()
             assertThat(state.currentRound).isEqualTo(2)
             assertThat(state.currentPhoto).isEqualTo(nextPhoto)
+        }
+    }
+
+    @Test
+    fun `loadNextRound with network error sets NetworkError`() = runTest {
+        fakePhotoRepository.setError(DataError.Network.NO_INTERNET)
+        viewModel = GameViewModel(getRandomPhotoUseCase, calculateDistanceUseCase, calculateScoreUseCase)
+
+        viewModel.uiState.test {
+            val state = awaitItem()
+            assertThat(state.error).isEqualTo(GameError.NetworkError)
+            assertThat(state.isLoading).isFalse()
+        }
+    }
+
+    @Test
+    fun `loadNextRound with no photo sets NoPhotoAvailable`() = runTest {
+        fakePhotoRepository.setError(PhotoError.NO_PHOTO_FOUND)
+        viewModel = GameViewModel(getRandomPhotoUseCase, calculateDistanceUseCase, calculateScoreUseCase)
+
+        viewModel.uiState.test {
+            val state = awaitItem()
+            assertThat(state.error).isEqualTo(GameError.NoPhotoAvailable)
+            assertThat(state.isLoading).isFalse()
         }
     }
 

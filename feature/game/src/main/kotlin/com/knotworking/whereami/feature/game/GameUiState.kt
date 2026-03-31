@@ -12,5 +12,5 @@ data class GameUiState(
     val guesses: List<Guess> = emptyList(),
     val lastGuess: Guess? = null,
     val isGameOver: Boolean = false,
-    val error: String? = null
+    val error: GameError? = null
 )

@@ -2,9 +2,10 @@ package com.knotworking.whereami.domain.photo.usecase
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import assertk.assertions.isNull
+import com.knotworking.whereami.core.domain.Result
 import com.knotworking.whereami.domain.photo.FakePhotoRepository
 import com.knotworking.whereami.domain.photo.model.Photo
+import com.knotworking.whereami.domain.photo.model.PhotoError
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
@@ -16,19 +17,19 @@ class GetRandomPhotoUseCaseTest {
     @Test
     fun `invoke returns photo from repository`() = runTest {
         val mockPhoto = Photo("1", "o", 0.0, 0.0, "t")
-        photoRepository.nextPhoto = mockPhoto
+        photoRepository.setNextPhoto(mockPhoto)
 
         val result = getRandomPhotoUseCase()
 
-        assertThat(result).isEqualTo(mockPhoto)
+        assertThat(result).isEqualTo(Result.Success(mockPhoto))
     }
 
     @Test
-    fun `invoke returns null when repository returns no photo`() = runTest {
-        photoRepository.nextPhoto = null
+    fun `invoke returns error when repository returns no photo`() = runTest {
+        photoRepository.setError(PhotoError.NO_PHOTO_FOUND)
 
         val result = getRandomPhotoUseCase()
 
-        assertThat(result).isNull()
+        assertThat(result).isEqualTo(Result.Error(PhotoError.NO_PHOTO_FOUND))
     }
 }
