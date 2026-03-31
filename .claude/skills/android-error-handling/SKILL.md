@@ -167,97 +167,42 @@ fun DataError.toUiText(): UiText {
 
 ## Safe Call Helpers (`core:network`)
 
-Typed extension functions on `HttpClient` that wrap Ktor calls and map HTTP responses to `Result<T, DataError.Network>`:
+`safeCall` wraps a Retrofit suspension call and maps `IOException` / `HttpException` to `Result<T, DataError.Network>`. Lives in `core/network/NetworkCall.kt`:
 
 ```kotlin
-suspend inline fun <reified Response : Any> HttpClient.get(
-    route: String,
-    queryParameters: Map<String, Any?> = mapOf()
-): Result<Response, DataError.Network> {
-    return safeCall {
-        get {
-            url(constructRoute(route))
-            queryParameters.forEach { (key, value) ->
-                parameter(key, value)
-            }
-        }
-    }
-}
-
-suspend inline fun <reified Request, reified Response : Any> HttpClient.post(
-    route: String,
-    body: Request
-): Result<Response, DataError.Network> {
-    return safeCall {
-        post {
-            url(constructRoute(route))
-            setBody(body)
-        }
-    }
-}
-
-suspend inline fun <reified Response : Any> HttpClient.delete(
-    route: String,
-    queryParameters: Map<String, Any?> = mapOf()
-): Result<Response, DataError.Network> {
-    return safeCall {
-        delete {
-            url(constructRoute(route))
-            queryParameters.forEach { (key, value) ->
-                parameter(key, value)
-            }
-        }
-    }
-}
-
-suspend inline fun <reified T> safeCall(
-    execute: () -> HttpResponse
-): Result<T, DataError.Network> {
-    val response = try {
-        execute()
-    } catch (e: UnresolvedAddressException) {
-        e.printStackTrace()
-        return Result.Error(DataError.Network.NO_INTERNET)
-    } catch (e: SerializationException) {
-        e.printStackTrace()
-        return Result.Error(DataError.Network.SERIALIZATION)
+suspend fun <T> safeCall(call: suspend () -> T): Result<T, DataError.Network> {
+    return try {
+        Result.Success(call())
+    } catch (e: IOException) {
+        Result.Error(DataError.Network.NO_INTERNET)
+    } catch (e: HttpException) {
+        Result.Error(e.toDataError())
     } catch (e: Exception) {
         if (e is CancellationException) throw e
-        e.printStackTrace()
-        return Result.Error(DataError.Network.UNKNOWN)
-    }
-
-    return responseToResult(response)
-}
-
-suspend inline fun <reified T> responseToResult(
-    response: HttpResponse
-): Result<T, DataError.Network> {
-    return when (response.status.value) {
-        in 200..299 -> Result.Success(response.body<T>())
-        401 -> Result.Error(DataError.Network.UNAUTHORIZED)
-        408 -> Result.Error(DataError.Network.REQUEST_TIMEOUT)
-        409 -> Result.Error(DataError.Network.CONFLICT)
-        413 -> Result.Error(DataError.Network.PAYLOAD_TOO_LARGE)
-        429 -> Result.Error(DataError.Network.TOO_MANY_REQUESTS)
-        in 500..599 -> Result.Error(DataError.Network.SERVER_ERROR)
-        else -> Result.Error(DataError.Network.UNKNOWN)
+        Result.Error(DataError.Network.UNKNOWN)
     }
 }
 
-fun constructRoute(route: String): String {
-    return when {
-        route.contains(BuildConfig.BASE_URL) -> route
-        route.startsWith("/") -> BuildConfig.BASE_URL + route
-        else -> BuildConfig.BASE_URL + "/$route"
-    }
+private fun HttpException.toDataError(): DataError.Network = when (code()) {
+    400 -> DataError.Network.BAD_REQUEST
+    401 -> DataError.Network.UNAUTHORIZED
+    404 -> DataError.Network.NOT_FOUND
+    408 -> DataError.Network.REQUEST_TIMEOUT
+    409 -> DataError.Network.CONFLICT
+    413 -> DataError.Network.PAYLOAD_TOO_LARGE
+    429 -> DataError.Network.TOO_MANY_REQUESTS
+    503 -> DataError.Network.SERVICE_UNAVAILABLE
+    in 500..599 -> DataError.Network.SERVER_ERROR
+    else -> DataError.Network.UNKNOWN
 }
 ```
 
-Usage in a data source is clean and uniform:
+Usage in a repository is clean and uniform:
 ```kotlin
-suspend fun getNotes(): Result<List<NoteDto>, DataError.Network> {
-    return httpClient.get(route = "/notes")
+return when (val result = safeCall { dataSource.fetchPhoto() }) {
+    is Result.Success -> result.data?.let { Result.Success(it) }
+        ?: Result.Error(PhotoError.NO_PHOTO_FOUND)
+    is Result.Error -> result
 }
 ```
 
