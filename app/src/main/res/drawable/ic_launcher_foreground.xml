@@ -8,15 +8,27 @@
         android:translateX="22"
         android:translateY="22">
         <!-- Globe -->
+        <!-- Outer Circle -->
         <path
             android:fillColor="#FFFFFF"
             android:pathData="M32,0C14.3,0 0,14.3 0,32s14.3,32 32,32s32,-14.3 32,-32S49.7,0 32,0zM32,58C17.7,58 6,46.3 6,32S17.7,6 32,6s26,11.7 26,26S46.3,58 32,58z" />
+        <!-- Longitude lines -->
         <path
             android:fillColor="#FFFFFF"
-            android:pathData="M32,6C32,6 40,18 40,32s-8,26 -8,26s-8,-12 -8,-26S32,6 32,6z" />
+            android:pathData="M31,6h2v52h-2z" />
         <path
             android:fillColor="#FFFFFF"
-            android:pathData="M6,32h52" />
+            android:pathData="M32,6c-10,0 -18,11.6 -18,26s8,26 18,26s18,-11.6 18,-26S42,6 32,6zM32,56c-8,0 -16,-10.6 -16,-24s8,-24 16,-24s16,10.6 16,24S40,56 32,56z" />
+        <!-- Latitude lines -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M6,31h52v2h-52z" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M10,18h44v2h-44z" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M10,44h44v2h-44z" />
 
         <!-- Location Pin -->
         <path
