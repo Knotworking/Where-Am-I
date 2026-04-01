@@ -1,4 +1,4 @@
-package com.knotworking.whereami.feature.game
+package com.knotworking.whereami.feature.game.leaderboard
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.knotworking.whereami.domain.game.model.HighScore
+import com.knotworking.whereami.feature.game.R
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -37,14 +38,14 @@ fun LeaderboardScreenRoot(
     onBack: () -> Unit,
     viewModel: LeaderboardViewModel = hiltViewModel()
 ) {
-    val scores by viewModel.scores.collectAsStateWithLifecycle()
-    LeaderboardScreen(scores = scores, onBack = onBack, onClear = viewModel::clearAll)
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    LeaderboardScreen(uiState = uiState, onBack = onBack, onClear = viewModel::clearAll)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LeaderboardScreen(
-    scores: List<HighScore>,
+    uiState: LeaderboardUiState,
     onBack: () -> Unit,
     onClear: () -> Unit
 ) {
@@ -54,7 +55,8 @@ fun LeaderboardScreen(
                 title = { Text(stringResource(R.string.leaderboard_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.leaderboard_back))
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(
+                            R.string.leaderboard_back))
                     }
                 }
             )
@@ -73,7 +75,7 @@ fun LeaderboardScreen(
             }
         }
     ) { padding ->
-        if (scores.isEmpty()) {
+        if (uiState.scores.isEmpty()) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -89,7 +91,7 @@ fun LeaderboardScreen(
                     .padding(padding)
                     .padding(horizontal = 16.dp)
             ) {
-                itemsIndexed(scores) { index, score ->
+                itemsIndexed(uiState.scores) { index, score ->
                     HighScoreRow(rank = index + 1, score = score)
                 }
             }

@@ -21,6 +21,5 @@ object GameDataModule {
         Room.databaseBuilder(context, GameDatabase::class.java, "game_database").build()
 
     @Provides
-    @Singleton
     fun provideHighScoreDao(database: GameDatabase): HighScoreDao = database.highScoreDao()
 }
