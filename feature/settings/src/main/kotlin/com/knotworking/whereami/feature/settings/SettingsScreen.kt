@@ -2,6 +2,7 @@ package com.knotworking.whereami.feature.settings
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -10,6 +11,7 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,12 +35,14 @@ import com.knotworking.whereami.domain.photo.model.PhotoSource
 @Composable
 fun SettingsScreenRoot(
     onBackClick: () -> Unit,
+    onLeaderboardClick: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     SettingsScreen(
         uiState = uiState,
         onBackClick = onBackClick,
+        onLeaderboardClick = onLeaderboardClick,
         onSetPhotoSource = viewModel::setPhotoSource
     )
 }
@@ -47,6 +52,7 @@ fun SettingsScreenRoot(
 fun SettingsScreen(
     uiState: SettingsUiState,
     onBackClick: () -> Unit,
+    onLeaderboardClick: () -> Unit,
     onSetPhotoSource: (PhotoSource) -> Unit = {}
 ) {
     Scaffold(
@@ -101,6 +107,16 @@ fun SettingsScreen(
                         )
                     }
                 }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            TextButton(onClick = onLeaderboardClick) {
+                Icon(Icons.Default.Menu, contentDescription = null)
+                Text(
+                    text = stringResource(R.string.settings_high_scores),
+                    modifier = Modifier.padding(start = 8.dp)
+                )
             }
         }
     }
