@@ -58,6 +58,7 @@ dependencies {
     implementation(project(":domain:game"))
     implementation(project(":domain:photo"))
     implementation(project(":data:photo"))
+    implementation(project(":data:game"))
     implementation(project(":core:network"))
     implementation(project(":core:ui"))
 
