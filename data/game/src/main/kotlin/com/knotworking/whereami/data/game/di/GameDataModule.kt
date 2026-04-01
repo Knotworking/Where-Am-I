@@ -18,8 +18,11 @@ object GameDataModule {
     @Provides
     @Singleton
     fun provideGameDatabase(@ApplicationContext context: Context): GameDatabase =
-        Room.databaseBuilder(context, GameDatabase::class.java, "game_database").build()
+        Room.databaseBuilder(context, GameDatabase::class.java, "game_database")
+            .fallbackToDestructiveMigration(true)
+            .build()
 
     @Provides
+    @Singleton
     fun provideHighScoreDao(database: GameDatabase): HighScoreDao = database.highScoreDao()
 }

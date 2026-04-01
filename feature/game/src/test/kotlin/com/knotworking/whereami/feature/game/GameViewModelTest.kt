@@ -29,6 +29,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
+//TODO could be moved to a testFixture for reusability
 private class FakeHighScoreRepository : HighScoreRepository {
     override fun getTopScores(): Flow<List<HighScore>> = flowOf(emptyList())
     override suspend fun save(totalScore: Int) = Unit

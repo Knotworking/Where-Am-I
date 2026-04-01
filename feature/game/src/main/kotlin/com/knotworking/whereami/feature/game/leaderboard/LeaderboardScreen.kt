@@ -1,5 +1,6 @@
 package com.knotworking.whereami.feature.game.leaderboard
 
+import android.text.format.DateFormat
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -21,6 +22,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,9 +31,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.knotworking.whereami.domain.game.model.HighScore
 import com.knotworking.whereami.feature.game.R
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun LeaderboardScreenRoot(
@@ -55,8 +54,12 @@ fun LeaderboardScreen(
                 title = { Text(stringResource(R.string.leaderboard_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(
-                            R.string.leaderboard_back))
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(
+                                R.string.leaderboard_back
+                            )
+                        )
                     }
                 }
             )
@@ -70,7 +73,10 @@ fun LeaderboardScreen(
             ) {
                 TextButton(onClick = onClear) {
                     Icon(Icons.Default.Delete, contentDescription = null)
-                    Text(stringResource(R.string.leaderboard_clear), modifier = Modifier.padding(start = 4.dp))
+                    Text(
+                        stringResource(R.string.leaderboard_clear),
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
                 }
             }
         }
@@ -82,7 +88,10 @@ fun LeaderboardScreen(
                     .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                Text(stringResource(R.string.leaderboard_empty), style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    stringResource(R.string.leaderboard_empty),
+                    style = MaterialTheme.typography.bodyLarge
+                )
             }
         } else {
             LazyColumn(
@@ -101,10 +110,9 @@ fun LeaderboardScreen(
 
 @Composable
 private fun HighScoreRow(rank: Int, score: HighScore) {
-    val localDateTime = Instant.fromEpochMilliseconds(score.timestamp)
-        .toLocalDateTime(TimeZone.currentSystemDefault())
-    val month = localDateTime.month.name.take(3).lowercase().replaceFirstChar { it.uppercase() }
-    val formatted = "$month ${localDateTime.dayOfMonth}, ${localDateTime.hour.toString().padStart(2, '0')}:${localDateTime.minute.toString().padStart(2, '0')}"
+    val formatted = remember(score.timestamp) {
+        DateFormat.format("MMM d, HH:mm, yyyy", score.timestamp).toString()
+    }
 
     Row(
         modifier = Modifier
