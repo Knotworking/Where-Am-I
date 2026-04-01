@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -86,12 +87,14 @@ private const val METERS_PER_KM = 1000.0
 @Composable
 fun GameScreenRoot(
     onSettingsClick: () -> Unit,
+    onLeaderboardClick: () -> Unit,
     viewModel: GameViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     GameScreen(
         onSettingsClick = onSettingsClick,
+        onLeaderboardClick = onLeaderboardClick,
         onStartNewGame = viewModel::startNewGame,
         onNextRound = viewModel::nextRound,
         onSubmitGuess = viewModel::submitGuess,
@@ -102,6 +105,7 @@ fun GameScreenRoot(
 @Composable
 fun GameScreen(
     onSettingsClick: () -> Unit,
+    onLeaderboardClick: () -> Unit,
     onStartNewGame: () -> Unit,
     onNextRound: () -> Unit,
     onSubmitGuess: (Double, Double) -> Unit,
@@ -122,7 +126,8 @@ fun GameScreen(
 
             uiState.isGameOver -> GameOverView(
                 totalScore = uiState.totalScore,
-                onRestart = onStartNewGame
+                onRestart = onStartNewGame,
+                onLeaderboardClick = onLeaderboardClick
             )
 
             else -> RoundView(
@@ -181,7 +186,7 @@ private fun ErrorView(message: String, onRetry: () -> Unit) {
 }
 
 @Composable
-private fun GameOverView(totalScore: Int, onRestart: () -> Unit) {
+private fun GameOverView(totalScore: Int, onRestart: () -> Unit, onLeaderboardClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -214,6 +219,16 @@ private fun GameOverView(totalScore: Int, onRestart: () -> Unit) {
             shape = RoundedCornerShape(32.dp)
         ) {
             Text(stringResource(R.string.game_start_new), fontSize = 20.sp)
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+        OutlinedButton(
+            onClick = onLeaderboardClick,
+            modifier = Modifier
+                .height(56.dp)
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(28.dp)
+        ) {
+            Text(stringResource(R.string.game_high_scores), fontSize = 18.sp)
         }
     }
 }
@@ -584,6 +599,7 @@ fun GameScreenPreview() {
     MaterialTheme {
         GameScreen(
             onSettingsClick = {},
+            onLeaderboardClick = {},
             onStartNewGame = {},
             onNextRound = {},
             onSubmitGuess = { _, _ -> },
@@ -624,7 +640,7 @@ fun ErrorViewPreview() {
 @Composable
 fun GameOverViewPreview() {
     MaterialTheme {
-        GameOverView(totalScore = 12450, onRestart = {})
+        GameOverView(totalScore = 12450, onRestart = {}, onLeaderboardClick = {})
     }
 }
 

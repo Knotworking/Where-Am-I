@@ -7,6 +7,7 @@ import com.knotworking.whereami.core.domain.Result
 import com.knotworking.whereami.domain.game.model.Guess
 import com.knotworking.whereami.domain.game.usecase.CalculateDistanceUseCase
 import com.knotworking.whereami.domain.game.usecase.CalculateScoreUseCase
+import com.knotworking.whereami.domain.game.usecase.SaveHighScoreUseCase
 import com.knotworking.whereami.domain.photo.model.PhotoError
 import com.knotworking.whereami.domain.photo.usecase.GetRandomPhotoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +22,8 @@ import javax.inject.Inject
 class GameViewModel @Inject constructor(
     private val getRandomPhotoUseCase: GetRandomPhotoUseCase,
     private val calculateDistanceUseCase: CalculateDistanceUseCase,
-    private val calculateScoreUseCase: CalculateScoreUseCase
+    private val calculateScoreUseCase: CalculateScoreUseCase,
+    private val saveHighScoreUseCase: SaveHighScoreUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(GameUiState())
@@ -108,6 +110,7 @@ class GameViewModel @Inject constructor(
             _uiState.update { it.copy(currentRound = it.currentRound + 1, lastGuess = null) }
             loadNextRound()
         } else {
+            viewModelScope.launch { saveHighScoreUseCase(_uiState.value.totalScore) }
             _uiState.update { it.copy(isGameOver = true) }
         }
     }

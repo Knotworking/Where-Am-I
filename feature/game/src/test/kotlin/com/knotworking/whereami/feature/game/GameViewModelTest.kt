@@ -8,11 +8,16 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isTrue
 import com.knotworking.whereami.core.domain.DataError
+import com.knotworking.whereami.domain.game.model.HighScore
+import com.knotworking.whereami.domain.game.repository.HighScoreRepository
 import com.knotworking.whereami.domain.game.usecase.CalculateDistanceUseCase
 import com.knotworking.whereami.domain.photo.model.PhotoError
 import com.knotworking.whereami.domain.game.usecase.CalculateScoreUseCase
+import com.knotworking.whereami.domain.game.usecase.SaveHighScoreUseCase
 import com.knotworking.whereami.domain.photo.FakePhotoRepository
 import com.knotworking.whereami.domain.photo.usecase.GetRandomPhotoUseCase
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import com.knotworking.whereami.domain.photo.model.Photo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,12 +29,19 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
+private class FakeHighScoreRepository : HighScoreRepository {
+    override fun getTopScores(): Flow<List<HighScore>> = flowOf(emptyList())
+    override suspend fun save(totalScore: Int) = Unit
+    override suspend fun clearAll() = Unit
+}
+
 @ExperimentalCoroutinesApi
 class GameViewModelTest {
     private val fakePhotoRepository = FakePhotoRepository()
     private val getRandomPhotoUseCase = GetRandomPhotoUseCase(fakePhotoRepository)
     private val calculateDistanceUseCase = CalculateDistanceUseCase()
     private val calculateScoreUseCase = CalculateScoreUseCase()
+    private val saveHighScoreUseCase = SaveHighScoreUseCase(FakeHighScoreRepository())
 
     private lateinit var viewModel: GameViewModel
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -49,7 +61,8 @@ class GameViewModelTest {
         viewModel = GameViewModel(
             getRandomPhotoUseCase,
             calculateDistanceUseCase,
-            calculateScoreUseCase
+            calculateScoreUseCase,
+            saveHighScoreUseCase
         )
     }
 
@@ -105,7 +118,7 @@ class GameViewModelTest {
     @Test
     fun `loadNextRound with network error sets NetworkError`() = runTest {
         fakePhotoRepository.setError(DataError.Network.NO_INTERNET)
-        viewModel = GameViewModel(getRandomPhotoUseCase, calculateDistanceUseCase, calculateScoreUseCase)
+        viewModel = GameViewModel(getRandomPhotoUseCase, calculateDistanceUseCase, calculateScoreUseCase, saveHighScoreUseCase)
 
         viewModel.uiState.test {
             val state = awaitItem()
@@ -117,7 +130,7 @@ class GameViewModelTest {
     @Test
     fun `loadNextRound with no photo sets NoPhotoAvailable`() = runTest {
         fakePhotoRepository.setError(PhotoError.NO_PHOTO_FOUND)
-        viewModel = GameViewModel(getRandomPhotoUseCase, calculateDistanceUseCase, calculateScoreUseCase)
+        viewModel = GameViewModel(getRandomPhotoUseCase, calculateDistanceUseCase, calculateScoreUseCase, saveHighScoreUseCase)
 
         viewModel.uiState.test {
             val state = awaitItem()
