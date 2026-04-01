@@ -14,6 +14,7 @@ kotlin {
 dependencies {
     implementation(project(":domain:photo"))
     implementation(libs.javax.inject)
+    implementation(libs.kotlinx.coroutines.core)
 
     testImplementation(libs.junit5.api)
     testRuntimeOnly(libs.junit5.engine)
