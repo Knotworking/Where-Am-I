@@ -46,6 +46,7 @@ dependencies {
     implementation(libs.coil.network.okhttp)
     implementation(libs.play.services.maps)
     implementation(libs.maps.compose)
+    implementation(libs.kotlinx.datetime)
 
     testImplementation(libs.junit5.api)
     testRuntimeOnly(libs.junit5.engine)

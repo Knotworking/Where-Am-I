@@ -11,6 +11,7 @@
     <string name="game_finished">Game Finished!</string>
     <string name="game_your_total_score">Your Total Score</string>
     <string name="game_start_new">Start New Game</string>
+    <string name="game_high_scores">High Scores</string>
 
     <!-- Map markers -->
     <string name="game_your_guess">Your Guess</string>
@@ -27,6 +28,12 @@
     <!-- Score overlay -->
     <string name="game_round_score">Round Score: %d</string>
     <string name="game_distance_km">You were %.2f km away</string>
+
+    <!-- Leaderboard -->
+    <string name="leaderboard_title">High Scores</string>
+    <string name="leaderboard_back">Back</string>
+    <string name="leaderboard_clear">Clear</string>
+    <string name="leaderboard_empty">No scores yet</string>
 
     <!-- Info chips -->
     <string name="game_round_counter">%1$d/%2$d</string>
