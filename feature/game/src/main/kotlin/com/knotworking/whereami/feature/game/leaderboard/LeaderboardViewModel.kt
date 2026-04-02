@@ -19,7 +19,7 @@ class LeaderboardViewModel @Inject constructor(
 ) : ViewModel() {
 
     val uiState: StateFlow<LeaderboardUiState> = getHighScoresUseCase()
-        .map { LeaderboardUiState(scores = it) }
+        .map { LeaderboardUiState(isLoading = false, scores = it) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), LeaderboardUiState())
 
     fun clearAll() {

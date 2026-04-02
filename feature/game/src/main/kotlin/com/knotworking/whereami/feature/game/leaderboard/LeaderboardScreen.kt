@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -81,8 +82,16 @@ fun LeaderboardScreen(
             }
         }
     ) { padding ->
-        if (uiState.scores.isEmpty()) {
-            Box(
+        when {
+            uiState.isLoading -> Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+            uiState.scores.isEmpty() -> Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding),
@@ -93,8 +102,7 @@ fun LeaderboardScreen(
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
-        } else {
-            LazyColumn(
+            else -> LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
