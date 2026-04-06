@@ -13,6 +13,7 @@ sealed interface UiText {
 }
 
 @Composable
+@Suppress("SpreadOperator")
 fun UiText.asString(): String = when (this) {
     is UiText.RawString -> value
     is UiText.StringResource -> stringResource(id, *args)
