@@ -10,3 +10,14 @@ java {
 kotlin {
     jvmToolchain(11)
 }
+
+dependencies {
+    testImplementation(libs.junit5.api)
+    testRuntimeOnly(libs.junit5.engine)
+    testRuntimeOnly(libs.junit5.launcher)
+    testImplementation(libs.assertk)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+}

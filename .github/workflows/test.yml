@@ -1,0 +1,86 @@
+name: Unit Tests
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run detekt + unit tests
+        run: ./gradlew detekt test --stacktrace
+
+      - name: Summarize unit test results
+        if: always()
+        run: |
+          {
+            echo "## Unit test results"
+            echo ""
+            echo "| Module | Tests | Failures | Errors | Skipped | Time (s) |"
+            echo "|---|---:|---:|---:|---:|---:|"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          total_tests=0
+          total_failures=0
+          total_errors=0
+          total_skipped=0
+
+          # AGP writes per-module JUnit XML here. Sort for stable ordering.
+          while IFS= read -r dir; do
+            module=$(echo "$dir" | sed -E 's|^\./||; s|/build/test-results/.*$||')
+            tests=0; failures=0; errors=0; skipped=0; time=0
+            while IFS= read -r xml; do
+              # <testsuite ... tests="N" failures="N" errors="N" skipped="N" time="N.NNN" ...>
+              attrs=$(grep -o '<testsuite [^>]*>' "$xml" | head -1)
+              t=$(echo "$attrs" | sed -nE 's/.* tests="([0-9]+)".*/\1/p')
+              f=$(echo "$attrs" | sed -nE 's/.* failures="([0-9]+)".*/\1/p')
+              e=$(echo "$attrs" | sed -nE 's/.* errors="([0-9]+)".*/\1/p')
+              s=$(echo "$attrs" | sed -nE 's/.* skipped="([0-9]+)".*/\1/p')
+              tm=$(echo "$attrs" | sed -nE 's/.* time="([0-9.]+)".*/\1/p')
+              tests=$((tests + ${t:-0}))
+              failures=$((failures + ${f:-0}))
+              errors=$((errors + ${e:-0}))
+              skipped=$((skipped + ${s:-0}))
+              time=$(awk -v a="$time" -v b="${tm:-0}" 'BEGIN { printf "%.3f", a + b }')
+            done < <(find "$dir" -name 'TEST-*.xml' 2>/dev/null)
+
+            if [ "$tests" -gt 0 ] || [ "$failures" -gt 0 ] || [ "$errors" -gt 0 ]; then
+              echo "| \`$module\` | $tests | $failures | $errors | $skipped | $time |" >> "$GITHUB_STEP_SUMMARY"
+              total_tests=$((total_tests + tests))
+              total_failures=$((total_failures + failures))
+              total_errors=$((total_errors + errors))
+              total_skipped=$((total_skipped + skipped))
+            fi
+          done < <(find . -type d -path '*/build/test-results/testDebugUnitTest' | sort)
+
+          {
+            echo "| **Total** | **$total_tests** | **$total_failures** | **$total_errors** | **$total_skipped** | |"
+            echo ""
+            if [ "$total_tests" -eq 0 ]; then
+              echo "> :warning: No unit tests were executed."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            **/build/reports/tests/
+            **/build/test-results/
+          retention-days: 7

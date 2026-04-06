@@ -15,6 +15,12 @@ android {
     namespace = "com.knotworking.whereami.data.photo"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
+    }
+
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
 
@@ -44,4 +50,10 @@ dependencies {
     implementation(libs.moshi.kotlin)
     ksp(libs.moshi.kotlin.codegen)
     implementation(libs.okhttp)
+
+    testImplementation(libs.junit5.api)
+    testRuntimeOnly(libs.junit5.engine)
+    testRuntimeOnly(libs.junit5.launcher)
+    testImplementation(libs.assertk)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
