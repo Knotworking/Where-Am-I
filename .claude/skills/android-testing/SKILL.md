@@ -29,7 +29,7 @@ description: |
 ### Setup
 
 ```kotlin
-class NoteListViewModelTest {
+class LeaderboardViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @BeforeEach
@@ -48,14 +48,14 @@ class NoteListViewModelTest {
 
 ```kotlin
 @Test
-fun `loading notes emits notes in state`() = runTest {
-        val repo = FakeNoteRepository()
-        val viewModel = NoteListViewModel(repo)
+fun `loading scores emits scores in state`() = runTest {
+        val repo = FakeHighScoreRepository()
+        val viewModel = LeaderboardViewModel(repo)
 
-        viewModel.state.test {
-            viewModel.onAction(NoteListAction.OnRefreshClick)
+        viewModel.uiState.test {
+            viewModel.onAction(LeaderboardAction.OnClearClick)
             assertThat(awaitItem().isLoading).isTrue()
-            assertThat(awaitItem().notes).isNotEmpty()
+            assertThat(awaitItem().scores).isEmpty()
         }
     }
 ```
@@ -64,12 +64,12 @@ fun `loading notes emits notes in state`() = runTest {
 
 ```kotlin
 @Test
-fun `clicking note sends NavigateToDetail event`() = runTest {
-        val viewModel = NoteListViewModel(FakeNoteRepository())
+fun `clicking back sends NavigateBack event`() = runTest {
+        val viewModel = LeaderboardViewModel(FakeHighScoreRepository())
 
         viewModel.events.test {
-            viewModel.onAction(NoteListAction.OnNoteClick("123"))
-            assertThat(awaitItem()).isEqualTo(NoteListEvent.NavigateToDetail("123"))
+            viewModel.onAction(LeaderboardAction.OnBackClick)
+            assertThat(awaitItem()).isEqualTo(LeaderboardEvent.NavigateBack)
         }
     }
 ```
@@ -83,17 +83,20 @@ Prefer **fakes** (not mocks) for repository dependencies. A fake is a simple in-
 implementation:
 
 ```kotlin
-class FakeNoteRepository : NoteRepository {
-    private val notes = mutableListOf<Note>()
+class FakeHighScoreRepository : HighScoreRepository {
+    private val scores = mutableListOf<HighScore>()
     var shouldReturnError = false
 
-    override suspend fun getNotes(): Result<List<Note>, DataError.Local> {
-        return if (shouldReturnError) Result.Error(DataError.Local.UNKNOWN)
-        else Result.Success(notes.toList())
+    override fun getTopScores(): Flow<List<HighScore>> = flowOf(scores.toList())
+
+    override suspend fun save(totalScore: Int): EmptyResult<DataError.Local> {
+        scores.add(HighScore(id = scores.size.toLong(), totalScore = totalScore, timestamp = System.currentTimeMillis()))
+        return Result.Success(Unit)
     }
 
-    override suspend fun insertNote(note: Note): EmptyResult<DataError.Local> {
-        notes.add(note)
+    override suspend fun clearAll(): EmptyResult<DataError.Local> {
+        if (shouldReturnError) return Result.Error(DataError.Local.UNKNOWN)
+        scores.clear()
         return Result.Success(Unit)
     }
 }
@@ -107,8 +110,8 @@ class FakeNoteRepository : NoteRepository {
 Instantiate it directly — no mocking needed:
 
 ```kotlin
-val savedStateHandle = SavedStateHandle(mapOf("noteId" to "123"))
-val viewModel = NoteEditorViewModel(savedStateHandle, FakeNoteRepository())
+val savedStateHandle = SavedStateHandle(mapOf("currentRound" to 3))
+val viewModel = GameViewModel(savedStateHandle, FakePhotoRepository())
 ```
 
  
@@ -149,14 +152,18 @@ complex user flows using `ComposeTestRule`:
 val composeTestRule = createComposeRule()
 
 @Test
-fun noteList_displaysNotes_afterLoad() {
+fun leaderboard_displaysScores_afterLoad() {
     composeTestRule.setContent {
-        NoteListScreen(
-            state = NoteListState(notes = listOf(NoteUi("1", "Hello", "Mar 15"))),
-            onAction = {}
+        LeaderboardScreen(
+            uiState = LeaderboardUiState(
+                isLoading = false,
+                scores = listOf(HighScore(id = 1, totalScore = 5000, timestamp = 1712345678000))
+            ),
+            onBack = {},
+            onClear = {}
         )
     }
-    composeTestRule.onNodeWithText("Hello").assertIsDisplayed()
+    composeTestRule.onNodeWithText("5000").assertIsDisplayed()
 }
 ```
 
@@ -174,23 +181,24 @@ Every robot function returns `this` so calls can be chained like a builder:
 
 ```kotlin
 // Robot class — owns all UI interactions for the screen
-class NoteListRobot(private val composeTestRule: ComposeContentTestRule) {
+class LeaderboardRobot(private val composeTestRule: ComposeContentTestRule) {
 
     fun setContent(
-        state: NoteListState,
-        onAction: (NoteListAction) -> Unit = {}
+        uiState: LeaderboardUiState,
+        onBack: () -> Unit = {},
+        onClear: () -> Unit = {}
     ) = apply {
         composeTestRule.setContent {
-            NoteListScreen(state = state, onAction = onAction)
+            LeaderboardScreen(uiState = uiState, onBack = onBack, onClear = onClear)
         }
     }
 
-    fun assertNoteVisible(title: String) = apply {
-        composeTestRule.onNodeWithText(title).assertIsDisplayed()
+    fun assertScoreVisible(score: Int) = apply {
+        composeTestRule.onNodeWithText(score.toString()).assertIsDisplayed()
     }
 
-    fun clickNote(title: String) = apply {
-        composeTestRule.onNodeWithText(title).performClick()
+    fun clickClear() = apply {
+        composeTestRule.onNodeWithTag("clear_button").performClick()
     }
 
     fun assertEmptyState() = apply {
@@ -202,43 +210,43 @@ class NoteListRobot(private val composeTestRule: ComposeContentTestRule) {
 ### Usage in Tests
 
 ```kotlin
-class NoteListScreenTest {
+class LeaderboardScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    private val robot by lazy { NoteListRobot(composeTestRule) }
+    private val robot by lazy { LeaderboardRobot(composeTestRule) }
 
     @Test
-    fun displaysNotes_afterLoad() {
+    fun displaysScores_afterLoad() {
         robot
-            .setContent(NoteListState(notes = listOf(NoteUi("1", "Hello", "Mar 15"))))
-            .assertNoteVisible("Hello")
+            .setContent(LeaderboardUiState(scores = listOf(HighScore(id = 1, totalScore = 5000, timestamp = 0))))
+            .assertScoreVisible(5000)
     }
 
     @Test
-    fun showsEmptyState_whenNoNotes() {
+    fun showsEmptyState_whenNoScores() {
         robot
-            .setContent(NoteListState(notes = emptyList()))
+            .setContent(LeaderboardUiState(scores = emptyList()))
             .assertEmptyState()
     }
 
     @Test
-    fun clickingNote_triggersAction() {
-        var clickedId: String? = null
+    fun clickingClear_triggersCallback() {
+        var cleared = false
         robot
             .setContent(
-                state = NoteListState(notes = listOf(NoteUi("1", "Hello", "Mar 15"))),
-                onAction = { if (it is NoteListAction.OnNoteClick) clickedId = it.noteId }
+                uiState = LeaderboardUiState(scores = listOf(HighScore(id = 1, totalScore = 5000, timestamp = 0))),
+                onClear = { cleared = true }
             )
-            .assertNoteVisible("Hello")
-            .clickNote("Hello")
+            .assertScoreVisible(5000)
+            .clickClear()
     }
 }
 ```
 
 **When to use:** Apply the robot pattern when a screen has 3+ UI test cases, when multiple tests
-share the same setup/assertion sequences, or when testing complex multi-step user flows (e.g., fill
-form → submit → assert result).
+share the same setup/assertion sequences, or when testing complex multi-step user flows (e.g., play
+a round → submit guess → assert score displayed).
  
 ---
 

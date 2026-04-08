@@ -3,6 +3,7 @@ name: android-presentation-mvi
 description: |
   MVI presentation layer for Android/KMP - State, Action, Event, ViewModel, Root/Screen composable split, UI models, UiText error mapping, and process death with SavedStateHandle. Use this skill whenever creating or reviewing a ViewModel, defining screen state, actions, or events, structuring composables, mapping errors to UI strings, or handling process death. Trigger on phrases like "add a ViewModel", "create a screen", "MVI", "state", "action", "event", "screen composable", "UiText", "SavedStateHandle", "ObserveAsEvents", or "UI model".
 ---
+
  
 # Android / KMP Presentation Layer (MVI)
  
@@ -19,8 +20,8 @@ Every screen has:
 ## State
  
 ```kotlin
-data class NoteListState(
-    val notes: List<NoteUi> = emptyList(),
+data class LeaderboardUiState(
+    val scores: List<HighScore> = emptyList(),
     val isLoading: Boolean = false,
     val error: UiText? = null
 )
@@ -28,7 +29,7 @@ data class NoteListState(
  
 Always update state with `.update { }` — never replace the entire flow:
 ```kotlin
-_state.update { it.copy(isLoading = true) }
+_uiState.update { it.copy(isLoading = true) }
 ```
  
 ---
@@ -36,10 +37,9 @@ _state.update { it.copy(isLoading = true) }
 ## Action (Intent)
  
 ```kotlin
-sealed interface NoteListAction {
-    data object OnRefreshClick : NoteListAction
-    data class OnNoteClick(val noteId: String) : NoteListAction
-    data class OnDeleteNote(val noteId: String) : NoteListAction
+sealed interface LeaderboardAction {
+    data object OnClearClick : LeaderboardAction
+    data object OnBackClick : LeaderboardAction
 }
 ```
  
@@ -48,9 +48,9 @@ sealed interface NoteListAction {
 ## Event (one-time side effects)
  
 ```kotlin
-sealed interface NoteListEvent {
-    data class NavigateToDetail(val noteId: String) : NoteListEvent
-    data class ShowSnackbar(val message: UiText) : NoteListEvent
+sealed interface LeaderboardEvent {
+    data object NavigateBack : LeaderboardEvent
+    data class ShowSnackbar(val message: UiText) : LeaderboardEvent
 }
 ```
  
@@ -59,37 +59,37 @@ sealed interface NoteListEvent {
 ## ViewModel
  
 ```kotlin
-class NoteListViewModel(
-    private val noteRepository: NoteRepository
+class LeaderboardViewModel(
+    private val highScoreRepository: HighScoreRepository
 ) : ViewModel() {
  
-    private val _state = MutableStateFlow(NoteListState())
-    val state = _state.asStateFlow()
+    private val _uiState = MutableStateFlow(LeaderboardUiState())
+    val uiState = _uiState.asStateFlow()
  
-    private val _events = Channel<NoteListEvent>()
+    private val _events = Channel<LeaderboardEvent>()
     val events = _events.receiveAsFlow()
  
-    fun onAction(action: NoteListAction) {
+    fun onAction(action: LeaderboardAction) {
         when (action) {
-            is NoteListAction.OnRefreshClick -> loadNotes()
-            is NoteListAction.OnNoteClick -> {
+            is LeaderboardAction.OnClearClick -> clearScores()
+            is LeaderboardAction.OnBackClick -> {
                 viewModelScope.launch {
-                    _events.send(NoteListEvent.NavigateToDetail(action.noteId))
+                    _events.send(LeaderboardEvent.NavigateBack)
                 }
             }
         }
     }
  
-    private fun loadNotes() {
+    private fun clearScores() {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
-            noteRepository.getNotes()
-                .onSuccess { notes ->
-                    _state.update { it.copy(notes = notes.map { it.toNoteUi() }, isLoading = false) }
+            _uiState.update { it.copy(isLoading = true) }
+            highScoreRepository.clearAll()
+                .onSuccess {
+                    _uiState.update { it.copy(scores = emptyList(), isLoading = false) }
                 }
                 .onFailure { error ->
-                    _state.update { it.copy(isLoading = false) }
-                    _events.send(NoteListEvent.ShowSnackbar(error.toUiText()))
+                    _uiState.update { it.copy(isLoading = false) }
+                    _events.send(LeaderboardEvent.ShowSnackbar(error.toUiText()))
                 }
         }
     }
@@ -128,17 +128,17 @@ sealed interface UiText {
 
 **When to use `UiText`:** For any string that comes from a string resource, could be localized, or might be either a resource or a dynamic value depending on context (e.g., error messages that map to `R.string.*`).
 
-**When to use plain `String`:** For values that are always dynamic and never come from resources — e.g., a user's name, a formatted date, a currency amount. These should be exposed as `String` directly in the state or UI model.
+**When to use plain `String`:** For values that are always dynamic and never come from resources — e.g., a formatted score, a formatted date, a distance string. These should be exposed as `String` directly in the state or UI model.
 
 ```kotlin
 // UiText — error message that maps to a string resource
-data class NoteListState(
+data class LeaderboardUiState(
     val error: UiText? = null
 )
 
 // Plain String — always dynamic, never a resource
-data class NoteUi(
-    val authorName: String,
+data class HighScoreUi(
+    val formattedScore: String,
     val formattedDate: String
 )
 ```
@@ -152,68 +152,68 @@ Define `DataError.toUiText()` extension functions in `core:presentation` (or fea
 When a domain model needs UI-specific formatting (dates, units, currency), create a dedicated UI model in the presentation layer:
  
 ```kotlin
-data class NoteUi(
-    val id: String,
-    val title: String,
-    val formattedDate: String  // e.g. "Mar 15, 2026"
+data class HighScoreUi(
+    val id: Long,
+    val formattedScore: String,   // e.g. "4,800 pts"
+    val formattedDate: String     // e.g. "Apr 5, 14:23"
 )
  
-fun Note.toNoteUi(): NoteUi = NoteUi(
+fun HighScore.toHighScoreUi(): HighScoreUi = HighScoreUi(
     id = id,
-    title = title,
-    formattedDate = date.format(...)
+    formattedScore = "$totalScore pts",
+    formattedDate = DateFormat.format("MMM d, HH:mm", timestamp).toString()
 )
 ```
  
-UI models are always suffixed with `Ui` (e.g., `NoteUi`, `TodoItemUi`).
+UI models are always suffixed with `Ui` (e.g., `HighScoreUi`).
  
 ---
  
 ## Composable Structure
 
-Both the Root and Screen composable live in the **same file** (e.g., `NoteListScreen.kt`).
+Both the Root and Screen composable live in the **same file** (e.g., `LeaderboardScreen.kt`).
 
 ### Root Composable (suffixed `Root`)
 
-Receives the ViewModel (via `koinViewModel()`) and any callbacks needed for navigation. Observes events. Passes state and `onAction` down.
+Receives the ViewModel (via `hiltViewModel()`) and any callbacks needed for navigation. Observes events. Passes state and `onAction` down.
 
 ### Screen Composable (suffixed `Screen`)
 
-Receives only `state` and `onAction`. No ViewModel reference. Can be previewed independently.
+Receives only `uiState` and `onAction` (or typed callbacks). No ViewModel reference. Can be previewed independently.
 
 ```kotlin
-// NoteListScreen.kt — Root + Screen in a single file
+// LeaderboardScreen.kt — Root + Screen in a single file
 
 @Composable
-fun NoteListRoot(
-    onNavigateToDetail: (String) -> Unit,
-    viewModel: NoteListViewModel = koinViewModel()
+fun LeaderboardScreenRoot(
+    onBack: () -> Unit,
+    viewModel: LeaderboardViewModel = hiltViewModel()
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            is NoteListEvent.NavigateToDetail -> onNavigateToDetail(event.noteId)
-            is NoteListEvent.ShowSnackbar -> { /* show snackbar */ }
+            is LeaderboardEvent.NavigateBack -> onBack()
+            is LeaderboardEvent.ShowSnackbar -> { /* show snackbar */ }
         }
     }
 
-    NoteListScreen(
-        state = state,
+    LeaderboardScreen(
+        uiState = uiState,
         onAction = viewModel::onAction
     )
 }
 
 @Composable
-fun NoteListScreen(
-    state: NoteListState,
-    onAction: (NoteListAction) -> Unit
+fun LeaderboardScreen(
+    uiState: LeaderboardUiState,
+    onAction: (LeaderboardAction) -> Unit
 ) { ... }
 
 @Preview
 @Composable
-private fun NoteListScreenPreview() {
-    NoteListScreen(state = NoteListState(), onAction = {})
+private fun LeaderboardScreenPreview() {
+    LeaderboardScreen(uiState = LeaderboardUiState(), onAction = {})
 }
 ```
  
@@ -224,24 +224,21 @@ private fun NoteListScreenPreview() {
 When a screen involves complex forms or critical user input, restore essential fields using `SavedStateHandle`:
  
 ```kotlin
-class NoteEditorViewModel(
+class GameViewModel(
     private val savedStateHandle: SavedStateHandle,
-    private val noteRepository: NoteRepository
+    private val getRandomPhotoUseCase: GetRandomPhotoUseCase
 ) : ViewModel() {
-    private val _state = MutableStateFlow(
-        NoteEditorState(
-            title = savedStateHandle["title"] ?: "",
-            body = savedStateHandle["body"] ?: ""
+    private val _uiState = MutableStateFlow(
+        GameUiState(
+            currentRound = savedStateHandle["currentRound"] ?: 1,
+            totalScore = savedStateHandle["totalScore"] ?: 0
         )
     )
  
-    fun onAction(action: NoteEditorAction) {
-        when (action) {
-            is NoteEditorAction.OnTitleChange -> {
-                savedStateHandle["title"] = action.title
-                _state.update { it.copy(title = action.title) }
-            }
-        }
+    fun nextRound() {
+        val next = _uiState.value.currentRound + 1
+        savedStateHandle["currentRound"] = next
+        _uiState.update { it.copy(currentRound = next) }
     }
 }
 ```
@@ -254,13 +251,13 @@ Only save what truly matters after process death — not the entire state.
  
 | Thing | Convention | Example |
 |---|---|---|
-| ViewModel | `<Screen>ViewModel` | `NoteListViewModel` |
-| State | `<Screen>State` | `NoteListState` |
-| Action | `<Screen>Action` | `NoteListAction` |
-| Event | `<Screen>Event` | `NoteListEvent` |
-| Root composable | `<Screen>Root` | `NoteListRoot` |
-| Screen composable | `<Screen>Screen` | `NoteListScreen` |
-| UI model | `<Model>Ui` | `NoteUi`, `TodoItemUi` |
+| ViewModel | `<Screen>ViewModel` | `GameViewModel`, `LeaderboardViewModel` |
+| State | `<Screen>UiState` | `GameUiState`, `LeaderboardUiState` |
+| Action | `<Screen>Action` | `LeaderboardAction` |
+| Event | `<Screen>Event` | `LeaderboardEvent` |
+| Root composable | `<Screen>Root` | `GameScreenRoot`, `LeaderboardScreenRoot` |
+| Screen composable | `<Screen>Screen` | `GameScreen`, `LeaderboardScreen` |
+| UI model | `<Model>Ui` | `HighScoreUi` |
  
 ---
  

@@ -25,10 +25,24 @@ This skill uses `Result<T, E>`, `DataError`, and the extension helpers defined i
 - Mappers are simple extension functions living in the data layer alongside the DTO:
 
 ```kotlin
-fun NoteDto.toNote(): Note = Note(id = id, title = title, ...)
-fun Note.toNoteDto(): NoteDto = NoteDto(id = id, title = title, ...)
-fun NoteEntity.toNote(): Note = ...
-fun Note.toNoteEntity(): NoteEntity = ...
+fun BenHikesPhotoDto.toPhoto(): Photo = Photo(
+    id = filename,
+    title = filename,
+    latitude = lat,
+    longitude = lng,
+    urlM = url
+)
+
+fun HighScoreEntity.toHighScore(): HighScore = HighScore(
+    id = id,
+    totalScore = totalScore,
+    timestamp = timestamp
+)
+fun HighScore.toHighScoreEntity(): HighScoreEntity = HighScoreEntity(
+    id = id,
+    totalScore = totalScore,
+    timestamp = timestamp
+)
 ```
  
 ---
@@ -40,13 +54,10 @@ Name implementations for what makes them unique — never suffix with `Impl`.
 ### Data source (single source)
 
 ```kotlin
-class RoomNoteDataSource(private val dao: NoteDao) : NoteLocalDataSource {
-    override suspend fun getNotes(): Result<List<Note>, DataError.Local> {
-        return try {
-            Result.Success(dao.getAllNotes().map { it.toNote() })
-        } catch (e: Exception) {
-            Result.Error(DataError.Local.UNKNOWN)
-        }
+class FlickrDataSource(private val api: FlickrApi) : RemotePhotoDataSource {
+    override suspend fun fetchPhoto(): Photo? {
+        val response = api.getRandomPhoto()
+        return response.photos.photo.randomOrNull()?.toPhoto()
     }
 }
 ```
@@ -54,24 +65,28 @@ class RoomNoteDataSource(private val dao: NoteDao) : NoteLocalDataSource {
 ### Repository
 
 ```kotlin
-class OfflineFirstNoteRepository(
-    private val localDataSource: NoteLocalDataSource,
-    private val remoteDataSource: NoteRemoteDataSource
-) : NoteRepository {
-    override suspend fun getNotes(): Result<List<Note>, DataError> {
-        return remoteDataSource.fetchNotes()
-            .onSuccess { notes -> localDataSource.insertAll(notes) }
-            .onFailure { localDataSource.getNotes() }
+class PhotoRepositoryImpl(
+    private val flickrDataSource: FlickrDataSource,
+    private val benHikesDataSource: BenHikesDataSource,
+    private val dataStore: DataStore<Preferences>
+) : PhotoRepository {
+    override suspend fun getRandomGeotaggedPhoto(): Result<Photo, Error> {
+        val source = getPhotoSource().first()
+        val dataSource = when (source) {
+            PhotoSource.FLICKR -> flickrDataSource
+            PhotoSource.BENHIKES -> benHikesDataSource
+        }
+        return when (val result = safeCall { dataSource.fetchPhoto() }) {
+            is Result.Success -> result.data?.let { Result.Success(it) }
+                ?: Result.Error(PhotoError.NO_PHOTO_FOUND)
+            is Result.Error -> result
+        }
     }
 }
 ```
 
-Use names like `RoomNoteDataSource`, `RemoteNoteDataSource`, `OfflineFirstNoteRepository`. The name should tell you what the class wraps or how it behaves.
+Use names like `FlickrDataSource`, `BenHikesDataSource`, `RoomHighScoreRepository`. The name should tell you what the class wraps or how it behaves.
 
-## Token Storage
-
-Store tokens in DataStore (in `core:data` or a dedicated `:core:auth` / `:feature:auth:data` module). The Ktor `Auth` plugin reads/writes tokens and handles 401 refresh automatically.
- 
 ---
 
 ## Room Migrations
@@ -92,22 +107,21 @@ This pattern is optional — apply it when the project requires offline support.
 
 | Thing | Convention | Example |
 |---|---|---|
-| Data source interface | `<Entity><Local/Remote>DataSource` | `NoteLocalDataSource`, `NoteRemoteDataSource` |
-| Data source impl | describe what makes it unique | `RoomNoteDataSource`, `KtorNoteDataSource` |
-| Repository interface | `<Entity>Repository` (multi-source only) | `NoteRepository` |
-| Repository impl | describe what makes it unique | `OfflineFirstNoteRepository` |
-| DTO | `<Model>Dto` | `NoteDto` |
-| Room entity | `<Model>Entity` | `NoteEntity` |
-| Mapper | extension fun on source type | `fun NoteDto.toNote()` |
+| Data source interface | `Remote<Entity>DataSource` | `RemotePhotoDataSource` |
+| Data source impl | describe what makes it unique | `FlickrDataSource`, `BenHikesDataSource` |
+| Repository interface | `<Entity>Repository` | `PhotoRepository`, `HighScoreRepository` |
+| Repository impl | describe what makes it unique | `PhotoRepositoryImpl`, `RoomHighScoreRepository` |
+| DTO | `<Model>Dto` | `BenHikesPhotoDto` |
+| Room entity | `<Model>Entity` | `HighScoreEntity` |
+| Mapper | extension fun on source type | `fun BenHikesPhotoDto.toPhoto()` |
  
 ---
 
 ## Checklist: Adding a New Data Source or Repository
 
-- [ ] Define domain model(s) in `feature:domain`
-- [ ] Define data source or repository interface in `feature:domain`
-- [ ] Define feature-specific error type(s) in `feature:domain` (implement `Error`) — see **android-error-handling** skill
-- [ ] Define DTOs and Room entities in `feature:data`
-- [ ] Write mappers as extension functions in `feature:data`
-- [ ] Implement data source (single source) or repository (multi-source) in `feature:data`, named for what makes it unique
- 
+- [ ] Define domain model(s) in `domain:<feature>`
+- [ ] Define data source or repository interface in `domain:<feature>`
+- [ ] Define feature-specific error type(s) in `domain:<feature>` (implement `Error`) — see **android-error-handling** skill
+- [ ] Define DTOs and Room entities in `data:<feature>`
+- [ ] Write mappers as extension functions in `data:<feature>`
+- [ ] Implement data source (single source) or repository (multi-source) in `data:<feature>`, named for what makes it unique

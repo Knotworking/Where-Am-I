@@ -21,16 +21,16 @@ Only annotate a state data class with `@Stable` when it contains fields the Comp
 ```kotlin
 // Needs @Stable — contains a List (unstable by default)
 @Stable
-data class NoteListState(
-    val notes: List<NoteUi> = emptyList(),
+data class LeaderboardUiState(
+    val scores: List<HighScore> = emptyList(),
     val isLoading: Boolean = false
 )
 
 // No annotation needed — all fields are stable
-data class NoteDetailState(
-    val title: String = "",
-    val body: String = "",
-    val isSaving: Boolean = false
+data class GameUiState(
+    val currentRound: Int = 1,
+    val totalScore: Int = 0,
+    val isLoading: Boolean = false
 )
 ```
 
@@ -56,7 +56,7 @@ val showScrollToTop by remember {
 
 Always collect ViewModel state with lifecycle awareness:
 ```kotlin
-val state by viewModel.state.collectAsStateWithLifecycle()
+val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 ```
 
 ---
@@ -97,10 +97,10 @@ Add `key` to lazy list items when there is an obvious unique identifier availabl
 ```kotlin
 LazyColumn {
     items(
-        items = state.notes,
+        items = uiState.scores,
         key = { it.id }  // id is clearly unique
-    ) { note ->
-        NoteItem(note = note, onClick = { onAction(OnNoteClick(note.id)) })
+    ) { score ->
+        HighScoreRow(rank = uiState.scores.indexOf(score) + 1, score = score)
     }
 }
 ```
@@ -118,7 +118,7 @@ Avoid animations that cause recompositions. Prefer approaches that animate below
 
 ```kotlin
 // Good — animates without recomposition
-val alpha by animateFloatAsState(if (state.isVisible) 1f else 0f)
+val alpha by animateFloatAsState(if (uiState.isLoading) 0f else 1f)
 Box(
     modifier = Modifier.graphicsLayer { this.alpha = alpha }
 )
@@ -192,16 +192,18 @@ Every Screen composable should have at least one meaningful `@Preview` that show
 ```kotlin
 @Preview
 @Composable
-private fun NoteListScreenPreview() {
+private fun LeaderboardScreenPreview() {
     AppTheme {
-        NoteListScreen(
-            state = NoteListState(
-                notes = listOf(
-                    NoteUi("1", "Meeting notes", "Mar 15"),
-                    NoteUi("2", "Shopping list", "Mar 14")
+        LeaderboardScreen(
+            uiState = LeaderboardUiState(
+                isLoading = false,
+                scores = listOf(
+                    HighScore(id = 1, totalScore = 4800, timestamp = 1712345678000),
+                    HighScore(id = 2, totalScore = 3200, timestamp = 1712259278000)
                 )
             ),
-            onAction = {}
+            onBack = {},
+            onClear = {}
         )
     }
 }
@@ -218,12 +220,12 @@ Use meaningful `contentDescription` on all interactive or informational visual e
 ```kotlin
 Icon(
     imageVector = Icons.Default.Delete,
-    contentDescription = stringResource(R.string.cd_delete_note)
+    contentDescription = stringResource(R.string.cd_clear_scores)
 )
 
 Image(
-    painter = painterResource(R.drawable.profile),
-    contentDescription = stringResource(R.string.cd_profile_picture)
+    painter = painterResource(R.drawable.map_pin),
+    contentDescription = stringResource(R.string.cd_map_pin)
 )
 ```
 
@@ -238,8 +240,8 @@ Text input state lives in the ViewModel. Every keystroke dispatches an Action:
 ```kotlin
 // In the Screen composable
 TextField(
-    value = state.title,
-    onValueChange = { onAction(NoteEditorAction.OnTitleChange(it)) }
+    value = state.latitudeInput,
+    onValueChange = { onAction(GameAction.OnLatitudeChange(it)) }
 )
 ```
 

@@ -68,7 +68,7 @@ fun <T, E : Error> Result<T, E>.asEmptyResult(): EmptyResult<E> {
 
 All helpers return `Result` so they can be chained:
 ```kotlin
-repository.saveNote(note)
+repository.saveHighScore(totalScore)
     .onSuccess { /* update UI */ }
     .onFailure { /* show error */ }
     .asEmptyResult()
@@ -144,7 +144,7 @@ The layer that owns the exception catches it and converts it to a typed `Result.
 
 Every error type that is displayed to the user should have a `.toUiText()` extension function. Place it in:
 
-- **Feature's `ui` module** — if the error is feature-specific (e.g., `AuthError.toUiText()`)
+- **Feature's `ui` module** — if the error is feature-specific (e.g., `GameError.toUiText()`)
 - **`core:ui`** — if the error is shared across features (e.g., `DataError.toUiText()`)
 
 If an error is purely internal and never shown to the user (e.g., a retry signal, an internal state marker), it does not need a `.toUiText()` mapping.
@@ -212,9 +212,9 @@ return when (val result = safeCall { dataSource.fetchPhoto() }) {
 
 | Scenario | Error type | Example return |
 |---|---|---|
-| Network call | `DataError.Network` | `Result<List<NoteDto>, DataError.Network>` |
-| Local DB access | `DataError.Local` | `Result<Note, DataError.Local>` |
-| Repository (multi-source) | `DataError` (supertype) | `Result<List<Note>, DataError>` |
+| Network call | `DataError.Network` | `Result<List<BenHikesPhotoDto>, DataError.Network>` |
+| Local DB access | `DataError.Local` | `Result<HighScore, DataError.Local>` |
+| Repository (multi-source) | `DataError` (supertype) | `Result<List<Photo>, DataError>` |
 | Domain validation | Custom `Error` enum | `EmptyResult<PasswordValidationError>` |
 | Auth logic | Custom `Error` enum | `Result<User, AuthError>` |
 

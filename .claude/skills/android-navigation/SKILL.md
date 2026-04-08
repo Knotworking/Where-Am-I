@@ -9,7 +9,7 @@ description: |
 ## Principles
 
 - **Type-safe navigation** with `@Serializable` route objects (KotlinX Serialization).
-- **One nav graph per feature**, defined in the feature module e.g. `:feature:notes`.
+- **One nav graph per feature**, defined in the feature module e.g. `:feature:game`.
 - Feature nav graphs are assembled in `:app`.
 - Navigation **within** a feature uses a `NavController` passed into the feature nav graph.
 - Feature-to-feature navigation uses **callbacks**, keeping features decoupled.
@@ -21,11 +21,11 @@ description: |
 Define routes as `@Serializable` objects or data classes in the feature module:
 
 ```kotlin
-// feature:notes
+// feature:game
 @Serializable
-object NoteListRoute
+data object GameRoute
 @Serializable
-data class NoteDetailRoute(val noteId: String)
+data object LeaderboardRoute
 ```
 
 Use `data object` for screens with no parameters, `data class` for screens with arguments.
@@ -37,23 +37,20 @@ Use `data object` for screens with no parameters, `data class` for screens with 
 Each feature exposes a `NavGraphBuilder` extension function:
 
 ```kotlin
-// feature:notes
-fun NavGraphBuilder.notesGraph(
+// feature:game
+fun NavGraphBuilder.gameGraph(
     navController: NavController,
-    onNavigateToEditor: (String) -> Unit  // callback for cross-feature navigation
+    onNavigateToSettings: () -> Unit  // callback for cross-feature navigation
 ) {
-    navigation<NoteListRoute>(startDestination = NoteListRoute) {
-        composable<NoteListRoute> {
-            NoteListRoot(
-                onNavigateToDetail = { navController.navigate(NoteDetailRoute(it)) }
+    navigation<GameRoute>(startDestination = GameRoute) {
+        composable<GameRoute> {
+            GameScreenRoot(
+                onSettingsClick = onNavigateToSettings,
+                onLeaderboardClick = { navController.navigate(LeaderboardRoute) }
             )
         }
-        composable<NoteDetailRoute> { backStackEntry ->
-            val route: NoteDetailRoute = backStackEntry.toRoute()
-            NoteDetailRoot(
-                noteId = route.noteId,
-                onNavigateToEditor = onNavigateToEditor
-            )
+        composable<LeaderboardRoute> {
+            LeaderboardScreenRoot(onBack = { navController.popBackStack() })
         }
     }
 }
@@ -68,12 +65,12 @@ All feature nav graphs are assembled in one place:
 
 ```kotlin
 // :app
-NavHost(navController, startDestination = NoteListRoute) {
-    notesGraph(
+NavHost(navController, startDestination = GameRoute) {
+    gameGraph(
         navController = navController,
-        onNavigateToEditor = { navController.navigate(EditorRoute(it)) }
+        onNavigateToSettings = { navController.navigate(SettingsRoute) }
     )
-    editorGraph(navController)
+    settingsGraph(navController)
 }
 ```
 
@@ -88,15 +85,15 @@ For simple scalar arguments, use `@Serializable data class` routes:
 
 ```kotlin
 @Serializable
-data class NoteDetailRoute(val noteId: String)
+data class RoundResultRoute(val roundNumber: Int)
 
 // Navigate
-navController.navigate(NoteDetailRoute(noteId = "abc123"))
+navController.navigate(RoundResultRoute(roundNumber = 3))
 
 // Receive
-composable<NoteDetailRoute> { backStackEntry ->
-    val route: NoteDetailRoute = backStackEntry.toRoute()
-    // route.noteId available here
+composable<RoundResultRoute> { backStackEntry ->
+    val route: RoundResultRoute = backStackEntry.toRoute()
+    // route.roundNumber available here
 }
 ```
 
@@ -106,10 +103,10 @@ Avoid passing complex objects via navigation — pass IDs and load data in the d
 
 ## Naming Conventions
 
-| Thing             | Convention                                 | Example                            |
-|-------------------|--------------------------------------------|------------------------------------|
-| Nav route         | `<Screen>Route`                            | `NoteListRoute`, `NoteDetailRoute` |
-| Feature nav graph | `<feature>Graph(...)` on `NavGraphBuilder` | `notesGraph(...)`                  |
+| Thing             | Convention                                 | Example                              |
+|-------------------|--------------------------------------------|------------------------------------- |
+| Nav route         | `<Screen>Route`                            | `GameRoute`, `LeaderboardRoute`      |
+| Feature nav graph | `<feature>Graph(...)` on `NavGraphBuilder` | `gameGraph(...)`, `settingsGraph(...)` |
 
  
 ---
@@ -122,4 +119,3 @@ Avoid passing complex objects via navigation — pass IDs and load data in the d
 - [ ] Pass `NavController` for intra-feature navigation
 - [ ] Expose cross-feature destinations as lambda callbacks (not direct route imports)
 - [ ] Wire nav graph and cross-feature callbacks in `:app`'s `NavHost`
- 
