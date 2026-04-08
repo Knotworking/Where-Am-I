@@ -2,6 +2,10 @@
 # buildUponDefaultConfig = true, so only overrides are listed here.
 
 naming:
+  MatchingDeclarationName:
+    mustBeFirst: false
+    # Navigation files contain multiple top-level declarations (route + graph extension)
+    excludes: ['**/*Navigation.kt']
   FunctionNaming:
     # Allow Composable functions (PascalCase)
     functionPattern: '[a-zA-Z][a-zA-Z0-9]*'

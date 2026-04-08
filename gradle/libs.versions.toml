@@ -42,6 +42,7 @@ junit5-platform = "1.14.3"
 assertk = "0.28.1"
 turbine = "1.2.1"
 kotlinxDatetime = "0.6.2"
+kotlinxSerialization = "1.8.1"
 
 # SDK Versions
 compileSdk = "36"
@@ -100,6 +101,7 @@ junit5-launcher = { group = "org.junit.platform", name = "junit-platform-launche
 assertk = { group = "com.willowtreeapps.assertk", name = "assertk", version.ref = "assertk" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinxDatetime" }
+kotlinx-serialization-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlinxSerialization" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -110,3 +112,4 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "googleDevtoolsKsp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
