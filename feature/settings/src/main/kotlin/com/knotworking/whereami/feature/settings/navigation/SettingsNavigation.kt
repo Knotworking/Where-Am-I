@@ -8,13 +8,16 @@ import com.knotworking.whereami.feature.settings.SettingsScreenRoot
 import kotlinx.serialization.Serializable
 
 @Serializable
+data object SettingsGraph
+
+@Serializable
 data object SettingsRoute
 
 fun NavGraphBuilder.settingsGraph(
     navController: NavController,
     onNavigateToLeaderboard: () -> Unit,
 ) {
-    navigation<SettingsRoute>(startDestination = SettingsRoute) {
+    navigation<SettingsGraph>(startDestination = SettingsRoute) {
         composable<SettingsRoute> {
             SettingsScreenRoot(
                 onBackClick = { navController.popBackStack() },

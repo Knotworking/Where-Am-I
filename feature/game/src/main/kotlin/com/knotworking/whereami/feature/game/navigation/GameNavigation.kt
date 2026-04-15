@@ -9,6 +9,9 @@ import com.knotworking.whereami.feature.game.leaderboard.LeaderboardScreenRoot
 import kotlinx.serialization.Serializable
 
 @Serializable
+data object GameGraph
+
+@Serializable
 data object GameRoute
 
 @Serializable
@@ -18,7 +21,7 @@ fun NavGraphBuilder.gameGraph(
     navController: NavController,
     onNavigateToSettings: () -> Unit,
 ) {
-    navigation<GameRoute>(startDestination = GameRoute) {
+    navigation<GameGraph>(startDestination = GameRoute) {
         composable<GameRoute> {
             GameScreenRoot(
                 onSettingsClick = onNavigateToSettings,
