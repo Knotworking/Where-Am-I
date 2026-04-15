@@ -30,48 +30,16 @@ jobs:
         if: always()
         run: |
           xml="build/reports/detekt/detekt.xml"
-          {
-            echo "## Detekt results"
-            echo ""
-          } >> "$GITHUB_STEP_SUMMARY"
-
+          echo "## Detekt results" >> "$GITHUB_STEP_SUMMARY"
           if [ ! -f "$xml" ]; then
-            echo "> :warning: detekt report not found." >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-
-          total=$(grep -c '<error ' "$xml" 2>/dev/null || echo 0)
-
-          if [ "$total" -eq 0 ]; then
-            echo "> :white_check_mark: No violations found." >> "$GITHUB_STEP_SUMMARY"
+            echo ":warning: detekt report not found." >> "$GITHUB_STEP_SUMMARY"
           else
-            {
-              echo "> :x: **$total violation(s) found.**"
-              echo ""
-              echo "| File | Line | Rule | Message |"
-              echo "|---|---:|---|---|"
-            } >> "$GITHUB_STEP_SUMMARY"
-
-            # Parse checkstyle XML: extract file name and each <error> within it
-            python3 - "$xml" >> "$GITHUB_STEP_SUMMARY" <<'PYEOF'
-import sys, xml.etree.ElementTree as ET
-
-tree = ET.parse(sys.argv[1])
-root = tree.getroot()
-for file_elem in root.findall('file'):
-    raw = file_elem.get('name', '')
-    # Strip everything up to and including /src/ for brevity
-    name = raw.split('/src/')[-1] if '/src/' in raw else raw.split('/')[-1]
-    for error in file_elem.findall('error'):
-        line = error.get('line', '')
-        source = error.get('source', '')
-        rule = source.split('.')[-1] if source else ''
-        msg = error.get('message', '').replace('|', '\\|')
-        # Truncate long messages
-        if len(msg) > 80:
-            msg = msg[:77] + '...'
-        print(f'| `{name}` | {line} | `{rule}` | {msg} |')
-PYEOF
+            total=$(grep -c '<error ' "$xml" 2>/dev/null || echo 0)
+            if [ "$total" -eq 0 ]; then
+              echo ":white_check_mark: No violations found." >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo ":x: $total violation(s) found. See the detekt-reports artifact for details." >> "$GITHUB_STEP_SUMMARY"
+            fi
           fi
 
       - name: Upload SARIF to Code Scanning
