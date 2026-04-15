@@ -53,9 +53,10 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.knotworking.whereami.core.ui.InfoChip
+import com.knotworking.whereami.core.ui.theme.WhereAmITheme
 import com.knotworking.whereami.domain.game.model.Guess
+import com.knotworking.whereami.domain.game.GameConstants
 import com.knotworking.whereami.feature.game.GameUiState
-import com.knotworking.whereami.feature.game.GameViewModel
 import com.knotworking.whereami.feature.game.R
 
 private const val METERS_PER_KM = 1000.0
@@ -91,7 +92,7 @@ internal fun RoundView(
 
         TopControls(
             currentRound = uiState.currentRound,
-            totalRounds = GameViewModel.TOTAL_ROUNDS,
+            totalRounds = GameConstants.TOTAL_ROUNDS,
             totalScore = uiState.totalScore,
             isPhotoVisible = isPhotoVisible,
             onShowPhoto = { isPhotoVisible = true },
@@ -106,7 +107,7 @@ internal fun RoundView(
             lastGuess = uiState.lastGuess,
             selectedLocation = selectedLocation,
             currentRound = uiState.currentRound,
-            totalRounds = GameViewModel.TOTAL_ROUNDS,
+            totalRounds = GameConstants.TOTAL_ROUNDS,
             onSubmitGuess = {
                 selectedLocation?.let { onSubmitGuess(it.latitude, it.longitude) }
             },
@@ -140,7 +141,10 @@ private fun GameMap(
         onMapClick = onMapClick
     ) {
         selectedLocation?.let {
-            Marker(state = MarkerState(position = it), title = stringResource(R.string.game_your_guess))
+            Marker(
+                state = MarkerState(position = it),
+                title = stringResource(R.string.game_your_guess)
+            )
         }
         lastGuess?.let { guess ->
             val actual = LatLng(guess.actualLatitude, guess.actualLongitude)
@@ -150,7 +154,11 @@ private fun GameMap(
                 title = stringResource(R.string.game_actual_location),
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
             )
-            Polyline(points = listOf(actual, guessed), color = MaterialTheme.colorScheme.primary, width = 8f)
+            Polyline(
+                points = listOf(actual, guessed),
+                color = MaterialTheme.colorScheme.primary,
+                width = 8f
+            )
         }
     }
 }
@@ -177,7 +185,10 @@ internal fun TopControls(
                     containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
                 )
             ) {
-                Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.game_settings))
+                Icon(
+                    Icons.Default.Settings,
+                    contentDescription = stringResource(R.string.game_settings)
+                )
             }
             Spacer(modifier = Modifier.width(8.dp))
             InfoChip(text = stringResource(R.string.game_round_counter, currentRound, totalRounds))
@@ -233,7 +244,11 @@ internal fun BottomControls(
                     shape = RoundedCornerShape(32.dp),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp)
                 ) {
-                    Text(stringResource(R.string.game_submit_guess), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        stringResource(R.string.game_submit_guess),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
 
@@ -300,25 +315,29 @@ internal fun ScoreOverlay(
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun TopControlsPreview() {
-    MaterialTheme {
-        TopControls(
-            currentRound = 3,
-            totalRounds = 5,
-            totalScore = 5400,
-            isPhotoVisible = false,
-            onShowPhoto = {},
-            onSettingsClick = {}
-        )
+    WhereAmITheme {
+        Box(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            TopControls(
+                currentRound = 3,
+                totalRounds = 5,
+                totalScore = 5400,
+                isPhotoVisible = false,
+                onShowPhoto = {},
+                onSettingsClick = {}
+            )
+        }
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun BottomControlsGuessingPreview() {
-    MaterialTheme {
+    WhereAmITheme {
         Box(modifier = Modifier.padding(16.dp)) {
             BottomControls(
                 lastGuess = null,
@@ -332,10 +351,10 @@ fun BottomControlsGuessingPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun BottomControlsResultPreview() {
-    MaterialTheme {
+    WhereAmITheme {
         Box(modifier = Modifier.padding(16.dp)) {
             BottomControls(
                 lastGuess = Guess(
@@ -356,10 +375,10 @@ fun BottomControlsResultPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun ScoreOverlayPreview() {
-    MaterialTheme {
+    WhereAmITheme {
         ScoreOverlay(
             guess = Guess(
                 latitude = 0.0,

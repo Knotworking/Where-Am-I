@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.knotworking.whereami.core.ui.theme.WhereAmITheme
 import com.knotworking.whereami.feature.game.R
 
 @Composable
@@ -68,7 +69,10 @@ internal fun ErrorView(message: String, onRetry: () -> Unit) {
         ) {
             Icon(Icons.Default.Refresh, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
-            Text(stringResource(R.string.error_try_again))
+            Text(
+                stringResource(R.string.error_try_again),
+                style = MaterialTheme.typography.titleMedium
+            )
         }
     }
 }
@@ -106,7 +110,10 @@ internal fun GameOverView(totalScore: Int, onRestart: () -> Unit, onLeaderboardC
                 .fillMaxWidth(),
             shape = RoundedCornerShape(32.dp)
         ) {
-            Text(stringResource(R.string.game_start_new), fontSize = 20.sp)
+            Text(
+                stringResource(R.string.game_start_new),
+                style = MaterialTheme.typography.titleMedium
+            )
         }
         Spacer(modifier = Modifier.height(12.dp))
         OutlinedButton(
@@ -116,7 +123,10 @@ internal fun GameOverView(totalScore: Int, onRestart: () -> Unit, onLeaderboardC
                 .fillMaxWidth(),
             shape = RoundedCornerShape(28.dp)
         ) {
-            Text(stringResource(R.string.game_high_scores), fontSize = 18.sp)
+            Text(
+                stringResource(R.string.game_high_scores),
+                style = MaterialTheme.typography.titleMedium
+            )
         }
     }
 }
@@ -124,7 +134,7 @@ internal fun GameOverView(totalScore: Int, onRestart: () -> Unit, onLeaderboardC
 @Preview(showBackground = true)
 @Composable
 fun LoadingViewPreview() {
-    MaterialTheme {
+    WhereAmITheme {
         LoadingView()
     }
 }
@@ -132,7 +142,7 @@ fun LoadingViewPreview() {
 @Preview(showBackground = true)
 @Composable
 fun ErrorViewPreview() {
-    MaterialTheme {
+    WhereAmITheme {
         ErrorView(
             message = "Connection lost. Please check your internet and try again.",
             onRetry = {}
@@ -143,7 +153,7 @@ fun ErrorViewPreview() {
 @Preview(showBackground = true)
 @Composable
 fun GameOverViewPreview() {
-    MaterialTheme {
+    WhereAmITheme {
         GameOverView(totalScore = 12450, onRestart = {}, onLeaderboardClick = {})
     }
 }

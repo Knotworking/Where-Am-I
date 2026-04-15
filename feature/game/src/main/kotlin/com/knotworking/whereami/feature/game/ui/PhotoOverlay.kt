@@ -41,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import androidx.compose.foundation.layout.BoxWithConstraints
+import com.knotworking.whereami.core.ui.theme.WhereAmITheme
 import com.knotworking.whereami.domain.photo.model.Photo
 import com.knotworking.whereami.feature.game.R
 
@@ -146,7 +147,7 @@ internal fun PhotoOverlay(
 @Preview
 @Composable
 fun PhotoOverlayPreview() {
-    MaterialTheme {
+    WhereAmITheme {
         PhotoOverlay(
             modifier = Modifier.padding(8.dp),
             photo = Photo(

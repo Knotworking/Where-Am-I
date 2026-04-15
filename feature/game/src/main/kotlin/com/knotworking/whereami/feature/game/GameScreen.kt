@@ -10,6 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.knotworking.whereami.core.ui.asString
+import com.knotworking.whereami.core.ui.theme.WhereAmITheme
 import com.knotworking.whereami.domain.photo.model.Photo
 import com.knotworking.whereami.feature.game.ui.ErrorView
 import com.knotworking.whereami.feature.game.ui.GameOverView
@@ -73,7 +74,7 @@ fun GameScreen(
 @Preview(showBackground = true)
 @Composable
 fun GameScreenPreview() {
-    MaterialTheme {
+    WhereAmITheme {
         GameScreen(
             onSettingsClick = {},
             onLeaderboardClick = {},
