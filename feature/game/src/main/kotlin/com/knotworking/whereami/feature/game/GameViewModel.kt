@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.knotworking.whereami.core.domain.DataError
 import com.knotworking.whereami.core.domain.Result
+import com.knotworking.whereami.domain.game.GameConstants
 import com.knotworking.whereami.domain.game.model.Guess
 import com.knotworking.whereami.domain.game.usecase.CalculateDistanceUseCase
 import com.knotworking.whereami.domain.game.usecase.CalculateScoreUseCase
@@ -28,10 +29,6 @@ class GameViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
-
-    companion object {
-        const val TOTAL_ROUNDS = 5
-    }
 
     init {
         startNewGame()
@@ -106,7 +103,7 @@ class GameViewModel @Inject constructor(
     }
 
     fun nextRound() {
-        if (_uiState.value.currentRound < TOTAL_ROUNDS) {
+        if (_uiState.value.currentRound < GameConstants.TOTAL_ROUNDS) {
             _uiState.update { it.copy(currentRound = it.currentRound + 1, lastGuess = null) }
             loadNextRound()
         } else {

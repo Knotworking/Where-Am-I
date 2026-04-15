@@ -8,6 +8,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isTrue
 import com.knotworking.whereami.core.domain.DataError
+import com.knotworking.whereami.domain.game.GameConstants.TOTAL_ROUNDS
 import com.knotworking.whereami.domain.game.model.HighScore
 import com.knotworking.whereami.domain.game.repository.HighScoreRepository
 import com.knotworking.whereami.domain.game.usecase.CalculateDistanceUseCase
@@ -144,7 +145,7 @@ class GameViewModelTest {
     fun `isGameOver set to true after 5 rounds`() = runTest {
         viewModel.uiState.test {
             awaitItem() // initial state
-            repeat(GameViewModel.TOTAL_ROUNDS - 1) {
+            repeat(TOTAL_ROUNDS - 1) {
                 viewModel.nextRound()
             }
             val midState = expectMostRecentItem()
