@@ -21,3 +21,11 @@ detekt {
         }
     )
 }
+
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    reports {
+        sarif {
+            required.set(true)
+        }
+    }
+}
