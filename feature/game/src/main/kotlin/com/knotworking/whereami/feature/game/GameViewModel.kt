@@ -19,6 +19,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+sealed interface GameAction {
+    data object StartNewGame : GameAction
+    data object NextRound : GameAction
+    data class SubmitGuess(val latitude: Double, val longitude: Double) : GameAction
+}
+
 @HiltViewModel
 class GameViewModel @Inject constructor(
     private val getRandomPhotoUseCase: GetRandomPhotoUseCase,
@@ -34,7 +40,15 @@ class GameViewModel @Inject constructor(
         startNewGame()
     }
 
-    fun startNewGame() {
+    fun onAction(action: GameAction) {
+        when (action) {
+            GameAction.StartNewGame -> startNewGame()
+            GameAction.NextRound -> nextRound()
+            is GameAction.SubmitGuess -> submitGuess(action.latitude, action.longitude)
+        }
+    }
+
+    private fun startNewGame() {
         _uiState.update { 
             it.copy(
                 totalScore = 0,
@@ -70,7 +84,7 @@ class GameViewModel @Inject constructor(
         }
     }
 
-    fun submitGuess(latitude: Double, longitude: Double) {
+    private fun submitGuess(latitude: Double, longitude: Double) {
         val currentPhoto = _uiState.value.currentPhoto ?: return
         
         val distance = calculateDistanceUseCase(
@@ -102,7 +116,7 @@ class GameViewModel @Inject constructor(
         }
     }
 
-    fun nextRound() {
+    private fun nextRound() {
         if (_uiState.value.currentRound < GameConstants.TOTAL_ROUNDS) {
             _uiState.update { it.copy(currentRound = it.currentRound + 1, lastGuess = null) }
             loadNextRound()

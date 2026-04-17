@@ -15,6 +15,10 @@ import javax.inject.Inject
 
 private const val SUBSCRIBE_TIMEOUT_MS = 5000L
 
+sealed interface SettingsAction {
+    data class SetPhotoSource(val source: PhotoSource) : SettingsAction
+}
+
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     getPhotoSourceUseCase: GetPhotoSourceUseCase,
@@ -29,7 +33,13 @@ class SettingsViewModel @Inject constructor(
             initialValue = SettingsUiState()
         )
 
-    fun setPhotoSource(source: PhotoSource) {
+    fun onAction(action: SettingsAction) {
+        when (action) {
+            is SettingsAction.SetPhotoSource -> setPhotoSource(action.source)
+        }
+    }
+
+    private fun setPhotoSource(source: PhotoSource) {
         viewModelScope.launch {
             setPhotoSourceUseCase(source)
         }
