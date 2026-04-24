@@ -142,6 +142,22 @@ class GameViewModelTest {
     }
 
     @Test
+    fun `start new game resets state after game has progressed`() = runTest {
+        viewModel.uiState.test {
+            awaitItem() // initial state
+            viewModel.onAction(GameAction.SubmitGuess(11.0, 11.0))
+            awaitItem() // state after guess
+
+            viewModel.onAction(GameAction.StartNewGame)
+            val state = expectMostRecentItem()
+            assertThat(state.totalScore).isEqualTo(0)
+            assertThat(state.currentRound).isEqualTo(1)
+            assertThat(state.guesses).hasSize(0)
+            assertThat(state.isGameOver).isFalse()
+        }
+    }
+
+    @Test
     fun `isGameOver set to true after 5 rounds`() = runTest {
         viewModel.uiState.test {
             awaitItem() // initial state

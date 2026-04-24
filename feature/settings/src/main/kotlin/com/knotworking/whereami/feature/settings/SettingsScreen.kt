@@ -53,7 +53,7 @@ fun SettingsScreen(
     uiState: SettingsUiState,
     onBackClick: () -> Unit,
     onLeaderboardClick: () -> Unit,
-    onAction: (SettingsAction) -> Unit = {}
+    onAction: (SettingsAction) -> Unit
 ) {
     Scaffold(
         topBar = {

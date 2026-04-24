@@ -91,6 +91,7 @@ fun LeaderboardScreen(
             ) {
                 CircularProgressIndicator()
             }
+
             uiState.scores.isEmpty() -> Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -102,6 +103,7 @@ fun LeaderboardScreen(
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
+
             else -> LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()

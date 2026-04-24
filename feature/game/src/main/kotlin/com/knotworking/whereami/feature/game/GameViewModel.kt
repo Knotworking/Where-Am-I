@@ -49,7 +49,7 @@ class GameViewModel @Inject constructor(
     }
 
     private fun startNewGame() {
-        _uiState.update { 
+        _uiState.update {
             it.copy(
                 totalScore = 0,
                 currentRound = 1,
@@ -70,6 +70,7 @@ class GameViewModel @Inject constructor(
                 is Result.Success -> _uiState.update {
                     it.copy(isLoading = false, isPhotoLoading = false, currentPhoto = result.data)
                 }
+
                 is Result.Error -> {
                     val gameError = when (result.error) {
                         PhotoError.NO_PHOTO_FOUND -> GameError.NoPhotoAvailable
@@ -86,16 +87,16 @@ class GameViewModel @Inject constructor(
 
     private fun submitGuess(latitude: Double, longitude: Double) {
         val currentPhoto = _uiState.value.currentPhoto ?: return
-        
+
         val distance = calculateDistanceUseCase(
             lat1 = latitude,
             lon1 = longitude,
             lat2 = currentPhoto.latitude,
             lon2 = currentPhoto.longitude
         )
-        
+
         val score = calculateScoreUseCase(distance)
-        
+
         val guess = Guess(
             latitude = latitude,
             longitude = longitude,
@@ -104,14 +105,12 @@ class GameViewModel @Inject constructor(
             distanceMeters = distance,
             score = score
         )
-        
+
         _uiState.update { state ->
             val updatedGuesses = state.guesses + guess
             val updatedTotalScore = state.totalScore + score
             state.copy(
-                guesses = updatedGuesses,
-                totalScore = updatedTotalScore,
-                lastGuess = guess
+                guesses = updatedGuesses, totalScore = updatedTotalScore, lastGuess = guess
             )
         }
     }
