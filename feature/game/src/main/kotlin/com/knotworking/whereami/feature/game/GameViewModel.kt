@@ -19,6 +19,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+sealed interface GameAction {
+    data object StartNewGame : GameAction
+    data object NextRound : GameAction
+    data class SubmitGuess(val latitude: Double, val longitude: Double) : GameAction
+}
+
 @HiltViewModel
 class GameViewModel @Inject constructor(
     private val getRandomPhotoUseCase: GetRandomPhotoUseCase,
@@ -34,8 +40,16 @@ class GameViewModel @Inject constructor(
         startNewGame()
     }
 
-    fun startNewGame() {
-        _uiState.update { 
+    fun onAction(action: GameAction) {
+        when (action) {
+            GameAction.StartNewGame -> startNewGame()
+            GameAction.NextRound -> nextRound()
+            is GameAction.SubmitGuess -> submitGuess(action.latitude, action.longitude)
+        }
+    }
+
+    private fun startNewGame() {
+        _uiState.update {
             it.copy(
                 totalScore = 0,
                 currentRound = 1,
@@ -56,6 +70,7 @@ class GameViewModel @Inject constructor(
                 is Result.Success -> _uiState.update {
                     it.copy(isLoading = false, isPhotoLoading = false, currentPhoto = result.data)
                 }
+
                 is Result.Error -> {
                     val gameError = when (result.error) {
                         PhotoError.NO_PHOTO_FOUND -> GameError.NoPhotoAvailable
@@ -70,18 +85,18 @@ class GameViewModel @Inject constructor(
         }
     }
 
-    fun submitGuess(latitude: Double, longitude: Double) {
+    private fun submitGuess(latitude: Double, longitude: Double) {
         val currentPhoto = _uiState.value.currentPhoto ?: return
-        
+
         val distance = calculateDistanceUseCase(
             lat1 = latitude,
             lon1 = longitude,
             lat2 = currentPhoto.latitude,
             lon2 = currentPhoto.longitude
         )
-        
+
         val score = calculateScoreUseCase(distance)
-        
+
         val guess = Guess(
             latitude = latitude,
             longitude = longitude,
@@ -90,19 +105,17 @@ class GameViewModel @Inject constructor(
             distanceMeters = distance,
             score = score
         )
-        
+
         _uiState.update { state ->
             val updatedGuesses = state.guesses + guess
             val updatedTotalScore = state.totalScore + score
             state.copy(
-                guesses = updatedGuesses,
-                totalScore = updatedTotalScore,
-                lastGuess = guess
+                guesses = updatedGuesses, totalScore = updatedTotalScore, lastGuess = guess
             )
         }
     }
 
-    fun nextRound() {
+    private fun nextRound() {
         if (_uiState.value.currentRound < GameConstants.TOTAL_ROUNDS) {
             _uiState.update { it.copy(currentRound = it.currentRound + 1, lastGuess = null) }
             loadNextRound()

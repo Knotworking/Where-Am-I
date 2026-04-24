@@ -56,6 +56,7 @@ import com.knotworking.whereami.core.ui.InfoChip
 import com.knotworking.whereami.core.ui.theme.WhereAmITheme
 import com.knotworking.whereami.domain.game.model.Guess
 import com.knotworking.whereami.domain.game.GameConstants
+import com.knotworking.whereami.feature.game.GameAction
 import com.knotworking.whereami.feature.game.GameUiState
 import com.knotworking.whereami.feature.game.R
 
@@ -64,8 +65,7 @@ private const val METERS_PER_KM = 1000.0
 @Composable
 internal fun RoundView(
     uiState: GameUiState,
-    onSubmitGuess: (Double, Double) -> Unit,
-    onNextRound: () -> Unit,
+    onAction: (GameAction) -> Unit,
     onSettingsClick: () -> Unit
 ) {
     var selectedLocation by remember(uiState.currentRound) { mutableStateOf<LatLng?>(null) }
@@ -109,10 +109,10 @@ internal fun RoundView(
             currentRound = uiState.currentRound,
             totalRounds = GameConstants.TOTAL_ROUNDS,
             onSubmitGuess = {
-                selectedLocation?.let { onSubmitGuess(it.latitude, it.longitude) }
+                selectedLocation?.let { onAction(GameAction.SubmitGuess(it.latitude, it.longitude)) }
             },
             onNextRound = {
-                onNextRound()
+                onAction(GameAction.NextRound)
                 isPhotoVisible = true
             },
             modifier = Modifier

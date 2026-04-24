@@ -75,7 +75,7 @@ class LeaderboardViewModelTest {
 
         viewModel.uiState.test {
             expectMostRecentItem() // skip to latest
-            viewModel.clearAll()
+            viewModel.onAction(LeaderboardAction.ClearAll)
             val state = awaitItem()
             assertThat(state.scores).isEmpty()
             assertThat(fakeRepository.cleared).isTrue()

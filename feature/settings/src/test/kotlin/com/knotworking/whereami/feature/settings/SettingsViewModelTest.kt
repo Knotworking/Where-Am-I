@@ -48,14 +48,14 @@ class SettingsViewModelTest {
     fun `setPhotoSource updates uiState to new source`() = runTest {
         viewModel.uiState.test {
             awaitItem() // initial state
-            viewModel.setPhotoSource(PhotoSource.BENHIKES)
+            viewModel.onAction(SettingsAction.SetPhotoSource(PhotoSource.BENHIKES))
             assertThat(awaitItem().photoSource).isEqualTo(PhotoSource.BENHIKES)
         }
     }
 
     @Test
     fun `setPhotoSource persists change to repository`() = runTest {
-        viewModel.setPhotoSource(PhotoSource.BENHIKES)
+        viewModel.onAction(SettingsAction.SetPhotoSource(PhotoSource.BENHIKES))
         viewModel.uiState.test {
             assertThat(awaitItem().photoSource).isEqualTo(PhotoSource.BENHIKES)
         }

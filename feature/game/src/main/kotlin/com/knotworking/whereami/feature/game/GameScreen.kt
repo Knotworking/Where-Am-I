@@ -28,9 +28,7 @@ fun GameScreenRoot(
     GameScreen(
         onSettingsClick = onSettingsClick,
         onLeaderboardClick = onLeaderboardClick,
-        onStartNewGame = viewModel::startNewGame,
-        onNextRound = viewModel::nextRound,
-        onSubmitGuess = viewModel::submitGuess,
+        onAction = viewModel::onAction,
         uiState = uiState
     )
 }
@@ -39,9 +37,7 @@ fun GameScreenRoot(
 fun GameScreen(
     onSettingsClick: () -> Unit,
     onLeaderboardClick: () -> Unit,
-    onStartNewGame: () -> Unit,
-    onNextRound: () -> Unit,
-    onSubmitGuess: (Double, Double) -> Unit,
+    onAction: (GameAction) -> Unit,
     uiState: GameUiState
 ) {
     Surface(
@@ -52,19 +48,18 @@ fun GameScreen(
             uiState.isLoading -> LoadingView()
             uiState.error != null -> ErrorView(
                 message = uiState.error.toUiText().asString(),
-                onRetry = onStartNewGame
+                onRetry = { onAction(GameAction.StartNewGame) }
             )
 
             uiState.isGameOver -> GameOverView(
                 totalScore = uiState.totalScore,
-                onRestart = onStartNewGame,
+                onRestart = { onAction(GameAction.StartNewGame) },
                 onLeaderboardClick = onLeaderboardClick
             )
 
             else -> RoundView(
                 uiState = uiState,
-                onSubmitGuess = onSubmitGuess,
-                onNextRound = onNextRound,
+                onAction = onAction,
                 onSettingsClick = onSettingsClick
             )
         }
@@ -78,9 +73,7 @@ fun GameScreenPreview() {
         GameScreen(
             onSettingsClick = {},
             onLeaderboardClick = {},
-            onStartNewGame = {},
-            onNextRound = {},
-            onSubmitGuess = { _, _ -> },
+            onAction = {},
             uiState = GameUiState(
                 currentRound = 3,
                 totalScore = 8500,

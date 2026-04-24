@@ -94,7 +94,7 @@ class GameViewModelTest {
 
         viewModel.uiState.test {
             awaitItem() // initial state
-            viewModel.submitGuess(guessLat, guessLon)
+            viewModel.onAction(GameAction.SubmitGuess(guessLat, guessLon))
             val state = awaitItem()
             assertThat(state.totalScore).isEqualTo(expectedScore)
             assertThat(state.guesses).hasSize(1)
@@ -110,7 +110,7 @@ class GameViewModelTest {
         viewModel.uiState.test {
             awaitItem() // initial state
             fakePhotoRepository.setNextPhoto(nextPhoto)
-            viewModel.nextRound()
+            viewModel.onAction(GameAction.NextRound)
             val state = expectMostRecentItem()
             assertThat(state.currentRound).isEqualTo(2)
             assertThat(state.currentPhoto).isEqualTo(nextPhoto)
@@ -142,18 +142,34 @@ class GameViewModelTest {
     }
 
     @Test
+    fun `start new game resets state after game has progressed`() = runTest {
+        viewModel.uiState.test {
+            awaitItem() // initial state
+            viewModel.onAction(GameAction.SubmitGuess(11.0, 11.0))
+            awaitItem() // state after guess
+
+            viewModel.onAction(GameAction.StartNewGame)
+            val state = expectMostRecentItem()
+            assertThat(state.totalScore).isEqualTo(0)
+            assertThat(state.currentRound).isEqualTo(1)
+            assertThat(state.guesses).hasSize(0)
+            assertThat(state.isGameOver).isFalse()
+        }
+    }
+
+    @Test
     fun `isGameOver set to true after 5 rounds`() = runTest {
         viewModel.uiState.test {
             awaitItem() // initial state
             repeat(TOTAL_ROUNDS - 1) {
-                viewModel.nextRound()
+                viewModel.onAction(GameAction.NextRound)
             }
             val midState = expectMostRecentItem()
             assertThat(midState.currentRound).isEqualTo(5)
             assertThat(midState.isGameOver).isFalse()
 
             // Final nextRound() on round 5 emits exactly one update: isGameOver=true
-            viewModel.nextRound()
+            viewModel.onAction(GameAction.NextRound)
             assertThat(awaitItem().isGameOver).isTrue()
         }
     }

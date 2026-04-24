@@ -39,7 +39,7 @@ fun LeaderboardScreenRoot(
     viewModel: LeaderboardViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    LeaderboardScreen(uiState = uiState, onBack = onBack, onClear = viewModel::clearAll)
+    LeaderboardScreen(uiState = uiState, onBack = onBack, onAction = viewModel::onAction)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,7 +47,7 @@ fun LeaderboardScreenRoot(
 fun LeaderboardScreen(
     uiState: LeaderboardUiState,
     onBack: () -> Unit,
-    onClear: () -> Unit
+    onAction: (LeaderboardAction) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -72,7 +72,7 @@ fun LeaderboardScreen(
                     .padding(8.dp),
                 contentAlignment = Alignment.Center
             ) {
-                TextButton(onClick = onClear) {
+                TextButton(onClick = { onAction(LeaderboardAction.ClearAll) }) {
                     Icon(Icons.Default.Delete, contentDescription = null)
                     Text(
                         stringResource(R.string.leaderboard_clear),
@@ -91,6 +91,7 @@ fun LeaderboardScreen(
             ) {
                 CircularProgressIndicator()
             }
+
             uiState.scores.isEmpty() -> Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -102,6 +103,7 @@ fun LeaderboardScreen(
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
+
             else -> LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()

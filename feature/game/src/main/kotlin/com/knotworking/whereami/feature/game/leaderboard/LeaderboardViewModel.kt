@@ -12,6 +12,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+sealed interface LeaderboardAction {
+    data object ClearAll : LeaderboardAction
+}
+
 @HiltViewModel
 class LeaderboardViewModel @Inject constructor(
     private val getHighScoresUseCase: GetHighScoresUseCase,
@@ -22,7 +26,13 @@ class LeaderboardViewModel @Inject constructor(
         .map { LeaderboardUiState(isLoading = false, scores = it) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), LeaderboardUiState())
 
-    fun clearAll() {
+    fun onAction(action: LeaderboardAction) {
+        when (action) {
+            LeaderboardAction.ClearAll -> clearAll()
+        }
+    }
+
+    private fun clearAll() {
         viewModelScope.launch { clearHighScoresUseCase() }
     }
 }

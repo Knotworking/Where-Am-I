@@ -43,7 +43,7 @@ fun SettingsScreenRoot(
         uiState = uiState,
         onBackClick = onBackClick,
         onLeaderboardClick = onLeaderboardClick,
-        onSetPhotoSource = viewModel::setPhotoSource
+        onAction = viewModel::onAction
     )
 }
 
@@ -53,7 +53,7 @@ fun SettingsScreen(
     uiState: SettingsUiState,
     onBackClick: () -> Unit,
     onLeaderboardClick: () -> Unit,
-    onSetPhotoSource: (PhotoSource) -> Unit = {}
+    onAction: (SettingsAction) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -90,7 +90,7 @@ fun SettingsScreen(
                             .height(56.dp)
                             .selectable(
                                 selected = (source == uiState.photoSource),
-                                onClick = { onSetPhotoSource(source) },
+                                onClick = { onAction(SettingsAction.SetPhotoSource(source)) },
                                 role = Role.RadioButton
                             )
                             .padding(horizontal = 16.dp),
