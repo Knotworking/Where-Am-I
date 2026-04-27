@@ -27,3 +27,6 @@ Thumbs.db
 
 # Kotlin generated files
 .kotlin/
+
+# Gemini agent files
+.agent/
