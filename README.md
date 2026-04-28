@@ -21,19 +21,19 @@ Clean Architecture + MVI, strictly layered with unidirectional dependencies:
 
 ```mermaid
 graph LR
-    app --> feature_game["feature:game"]
-    app --> feature_settings["feature:settings"]
-    feature_game --> domain_game["domain:game"]
+    feature_game["feature:game"] --> domain_game["domain:game"]
     feature_game --> domain_photo["domain:photo"]
-    feature_settings --> domain_photo
+    feature_game --> core_ui["core:ui"]
+    feature_game --> core_domain["core:domain"]
+    feature_settings["feature:settings"] --> domain_photo
+    feature_settings --> core_ui
+    domain_game --> domain_photo
+    domain_photo --> core_domain
     data_photo["data:photo"] --> domain_photo
-    data_game["data:game"] --> domain_game
     data_photo --> core_network["core:network"]
-    data_game --> core_network
-    core_ui["core:ui"] --> feature_game
-    core_ui --> feature_settings
-    core_domain["core:domain"] --> domain_game
-    core_domain --> domain_photo
+    data_photo --> core_domain
+    data_game["data:game"] --> domain_game
+    core_network --> core_domain["core:domain"]
 ```
 
 ---
