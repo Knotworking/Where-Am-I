@@ -2,7 +2,9 @@
 
 A geography guessing game for Android: you're shown a geotagged photo and must drop a pin on the map where you think it was taken. Five rounds, Haversine scoring, leaderboard.
 
-<!-- Screenshots / GIF — add once assets are available -->
+<img width="300" alt="Screenshot_20260428_144857" src="https://github.com/user-attachments/assets/b40b22d1-6c93-4658-bfc7-f0d1a328624f" />
+
+<img width="300" alt="Screenshot_20260428_145013" src="https://github.com/user-attachments/assets/acc3a060-6267-4b77-8119-afccf6621d8e" />
 
 ---
 
