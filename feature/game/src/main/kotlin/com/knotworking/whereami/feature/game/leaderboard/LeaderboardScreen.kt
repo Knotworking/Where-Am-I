@@ -27,9 +27,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.knotworking.whereami.core.ui.theme.WhereAmITheme
 import com.knotworking.whereami.domain.game.model.HighScore
 import com.knotworking.whereami.feature.game.R
 
@@ -115,6 +117,37 @@ fun LeaderboardScreen(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LeaderboardEmptyPreview() {
+    WhereAmITheme {
+        LeaderboardScreen(
+            uiState = LeaderboardUiState(isLoading = false, scores = emptyList()),
+            onBack = {},
+            onAction = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LeaderboardPopulatedPreview() {
+    WhereAmITheme {
+        LeaderboardScreen(
+            uiState = LeaderboardUiState(
+                isLoading = false,
+                scores = listOf(
+                    HighScore(id = 1, totalScore = 18500, timestamp = 1_700_000_000_000L),
+                    HighScore(id = 2, totalScore = 14200, timestamp = 1_699_000_000_000L),
+                    HighScore(id = 3, totalScore = 9800, timestamp = 1_698_000_000_000L)
+                )
+            ),
+            onBack = {},
+            onAction = {}
+        )
     }
 }
 
