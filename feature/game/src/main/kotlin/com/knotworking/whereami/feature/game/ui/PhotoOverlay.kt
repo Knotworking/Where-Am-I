@@ -146,7 +146,7 @@ internal fun PhotoOverlay(
 
 @Preview
 @Composable
-fun PhotoOverlayPreview() {
+private fun PhotoOverlayPreview() {
     WhereAmITheme {
         PhotoOverlay(
             modifier = Modifier.padding(8.dp),

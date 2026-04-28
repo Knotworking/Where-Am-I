@@ -1,0 +1,6 @@
+# Copy this file to local.properties and fill in your keys.
+# local.properties is gitignored and must never be committed.
+
+FLICKR_API_KEY=
+MAPS_API_KEY=
+BENHIKES_BASE_URL=
