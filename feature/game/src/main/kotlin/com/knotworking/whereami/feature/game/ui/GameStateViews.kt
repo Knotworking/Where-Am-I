@@ -133,7 +133,7 @@ internal fun GameOverView(totalScore: Int, onRestart: () -> Unit, onLeaderboardC
 
 @Preview(showBackground = true)
 @Composable
-fun LoadingViewPreview() {
+private fun LoadingViewPreview() {
     WhereAmITheme {
         LoadingView()
     }
@@ -141,7 +141,7 @@ fun LoadingViewPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun ErrorViewPreview() {
+private fun ErrorViewPreview() {
     WhereAmITheme {
         ErrorView(
             message = "Connection lost. Please check your internet and try again.",
@@ -152,7 +152,7 @@ fun ErrorViewPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun GameOverViewPreview() {
+private fun GameOverViewPreview() {
     WhereAmITheme {
         GameOverView(totalScore = 12450, onRestart = {}, onLeaderboardClick = {})
     }

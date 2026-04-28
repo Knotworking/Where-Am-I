@@ -30,7 +30,7 @@ fun InfoChip(text: String) {
 
 @Preview
 @Composable
-fun InfoChipPreview() {
+private fun InfoChipPreview() {
     WhereAmITheme {
         InfoChip(text = "Round 3/5")
     }

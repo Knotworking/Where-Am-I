@@ -31,3 +31,6 @@ style:
       - '360'
       - '180'
       - '90'
+  UnusedPrivateMember:
+    ignoreAnnotated:
+      - 'Preview'

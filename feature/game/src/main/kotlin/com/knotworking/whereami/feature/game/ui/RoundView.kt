@@ -317,7 +317,7 @@ internal fun ScoreOverlay(
 
 @Preview
 @Composable
-fun TopControlsPreview() {
+private fun TopControlsPreview() {
     WhereAmITheme {
         Box(
             modifier = Modifier.padding(16.dp)
@@ -336,7 +336,7 @@ fun TopControlsPreview() {
 
 @Preview
 @Composable
-fun BottomControlsGuessingPreview() {
+private fun BottomControlsGuessingPreview() {
     WhereAmITheme {
         Box(modifier = Modifier.padding(16.dp)) {
             BottomControls(
@@ -353,7 +353,7 @@ fun BottomControlsGuessingPreview() {
 
 @Preview
 @Composable
-fun BottomControlsResultPreview() {
+private fun BottomControlsResultPreview() {
     WhereAmITheme {
         Box(modifier = Modifier.padding(16.dp)) {
             BottomControls(
@@ -377,7 +377,7 @@ fun BottomControlsResultPreview() {
 
 @Preview
 @Composable
-fun ScoreOverlayPreview() {
+private fun ScoreOverlayPreview() {
     WhereAmITheme {
         ScoreOverlay(
             guess = Guess(

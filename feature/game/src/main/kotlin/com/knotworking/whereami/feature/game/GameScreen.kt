@@ -68,7 +68,7 @@ fun GameScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun GameScreenPreview() {
+private fun GameScreenPreview() {
     WhereAmITheme {
         GameScreen(
             onSettingsClick = {},
