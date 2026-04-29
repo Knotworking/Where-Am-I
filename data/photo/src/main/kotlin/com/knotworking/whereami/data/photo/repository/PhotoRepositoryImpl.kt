@@ -40,9 +40,6 @@ class PhotoRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getRandomGeotaggedPhoto(): Result<Photo, Error> {
-        //TODO Fetch [round_count] photos in one network call, cache them in memory.
-        // return next cached photo until cache empty.
-
         val source = getPhotoSource().first()
         val dataSource = when (source) {
             PhotoSource.FLICKR -> flickrDataSource
