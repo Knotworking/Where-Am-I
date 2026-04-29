@@ -8,6 +8,20 @@ A geography guessing game for Android: you're shown a geotagged photo and must d
 
 ---
 
+## Tech stack
+
+- **Jetpack Compose** — entire UI, MVI pattern, `StateFlow<UiState>`
+- **Google Maps SDK** — interactive pin-drop for guessing
+- **Hilt** — dependency injection throughout
+- **Room** — local persistence for high scores
+- **Moshi + KSP** — JSON deserialisation (DTOs in data modules)
+- **DataStore** — settings persistence (selected photo source)
+- **Coroutines + Flow** — async and reactive throughout
+- **Switchable APIs** — load photos either from Flickr, or my website, switch in settings.
+- **detekt** — static analysis, enforced in CI
+
+---
+
 ## What it does
 
 1. A geotagged photo is fetched from Flickr or the BenHikes API.
@@ -78,21 +92,6 @@ graph LR
 | `:core:network` | Hilt module: shared OkHttpClient, Moshi |
 | `:core:ui` | Material 3 theme only |
 | `:core:domain` | Shared models and `Result<T, E>` wrapper |
-
----
-
-## Tech stack
-
-- **Jetpack Compose** — entire UI, MVI pattern, `StateFlow<UiState>`
-- **Google Maps SDK** — interactive pin-drop for guessing
-- **Hilt** — dependency injection throughout
-- **Room** — local persistence for high scores
-- **Moshi + KSP** — JSON deserialisation (DTOs in data modules)
-- **DataStore** — settings persistence (selected photo source)
-- **Coroutines + Flow** — async and reactive throughout
-- **Flickr API** — primary geotagged photo source (100 photos per call)
-- **BenHikes API** — secondary photo source (custom endpoint)
-- **detekt** — static analysis, enforced in CI
 
 ---
 
