@@ -24,7 +24,9 @@ class GameScreenRobot(
                 onSettingsClick = onSettingsClick,
                 onLeaderboardClick = onLeaderboardClick,
                 onAction = onAction,
-                uiState = uiState
+                uiState = uiState,
+                // Google Maps requires an API key even in tests; bypass it with a no-op
+                mapContent = { _, _, _ -> }
             )
         }
     }

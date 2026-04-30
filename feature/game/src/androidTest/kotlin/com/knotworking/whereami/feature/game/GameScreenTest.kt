@@ -57,7 +57,7 @@ class GameScreenTest {
 
     @Test
     fun round_active_shows_round_counter() {
-        // Map composable is not asserted — GoogleMap doesn't render meaningfully in emulator tests.
+        // Map composable is not asserted — Google Maps doesn't render meaningfully in emulator tests.
         robot.setContent(uiState = GameUiState(currentRound = 2))
             .assertRoundCounter(current = 2, total = 5)
     }
