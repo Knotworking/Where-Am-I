@@ -13,8 +13,10 @@ import com.knotworking.whereami.core.ui.asString
 import com.knotworking.whereami.core.ui.theme.WhereAmITheme
 import com.knotworking.whereami.domain.photo.model.Photo
 import com.knotworking.whereami.feature.game.ui.ErrorView
+import com.knotworking.whereami.feature.game.ui.GameMap
 import com.knotworking.whereami.feature.game.ui.GameOverView
 import com.knotworking.whereami.feature.game.ui.LoadingView
+import com.knotworking.whereami.feature.game.ui.MapContent
 import com.knotworking.whereami.feature.game.ui.RoundView
 
 @Composable
@@ -38,7 +40,10 @@ fun GameScreen(
     onSettingsClick: () -> Unit,
     onLeaderboardClick: () -> Unit,
     onAction: (GameAction) -> Unit,
-    uiState: GameUiState
+    uiState: GameUiState,
+    mapContent: MapContent = { selectedLocation, guess, click ->
+        GameMap(modifier = Modifier.fillMaxSize(), selectedLocation = selectedLocation, lastGuess = guess, onMapClick = click)
+    }
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -60,7 +65,8 @@ fun GameScreen(
             else -> RoundView(
                 uiState = uiState,
                 onAction = onAction,
-                onSettingsClick = onSettingsClick
+                onSettingsClick = onSettingsClick,
+                mapContent = mapContent
             )
         }
     }
