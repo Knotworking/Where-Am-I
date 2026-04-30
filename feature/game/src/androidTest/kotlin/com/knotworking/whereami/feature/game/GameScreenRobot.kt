@@ -1,35 +1,59 @@
 package com.knotworking.whereami.feature.game
 
+import androidx.activity.ComponentActivity
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
-import androidx.compose.ui.test.SemanticsNodeInteractionsProvider
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasProgressBarRangeInfo
+import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 
-class GameScreenRobot(private val rule: SemanticsNodeInteractionsProvider) {
+class GameScreenRobot(
+    private val composeTestRule: AndroidComposeTestRule<ActivityScenarioRule<ComponentActivity>, ComponentActivity>
+) {
+
+    fun setContent(
+        uiState: GameUiState,
+        onSettingsClick: () -> Unit = {},
+        onLeaderboardClick: () -> Unit = {},
+        onAction: (GameAction) -> Unit = {}
+    ) = apply {
+        composeTestRule.setContent {
+            GameScreen(
+                onSettingsClick = onSettingsClick,
+                onLeaderboardClick = onLeaderboardClick,
+                onAction = onAction,
+                uiState = uiState
+            )
+        }
+    }
 
     fun assertLoading() {
-        rule.onNode(hasProgressBarRangeInfo(ProgressBarRangeInfo.Indeterminate)).assertIsDisplayed()
+        composeTestRule.onNode(hasProgressBarRangeInfo(ProgressBarRangeInfo.Indeterminate)).assertIsDisplayed()
     }
 
     fun assertRetryButton() {
-        rule.onNodeWithText("Try Again").assertIsDisplayed()
+        val retryText = composeTestRule.activity.getString(R.string.error_try_again)
+        composeTestRule.onNodeWithText(retryText).assertIsDisplayed()
     }
 
     fun clickRetry() {
-        rule.onNodeWithText("Try Again").performClick()
+        val retryText = composeTestRule.activity.getString(R.string.error_try_again)
+        composeTestRule.onNodeWithText(retryText).performClick()
     }
 
     fun assertGameOver(score: Int) {
-        rule.onNodeWithText(score.toString()).assertIsDisplayed()
+        composeTestRule.onNodeWithText(score.toString()).assertIsDisplayed()
     }
 
     fun clickStartNew() {
-        rule.onNodeWithText("Start New Game").performClick()
+        val startNewText = composeTestRule.activity.getString(R.string.game_start_new)
+        composeTestRule.onNodeWithText(startNewText).performClick()
     }
 
     fun assertRoundCounter(current: Int, total: Int) {
-        rule.onNodeWithText("$current/$total").assertIsDisplayed()
+        val counterText = composeTestRule.activity.getString(R.string.game_round_counter, current, total)
+        composeTestRule.onNodeWithText(counterText).assertIsDisplayed()
     }
 }
