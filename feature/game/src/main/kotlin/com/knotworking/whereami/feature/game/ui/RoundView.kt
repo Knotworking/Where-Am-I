@@ -62,22 +62,27 @@ import com.knotworking.whereami.feature.game.R
 
 private const val METERS_PER_KM = 1000.0
 
+internal typealias MapContent = @Composable (
+    selectedLocation: LatLng?,
+    lastGuess: Guess?,
+    onMapCLick: (LatLng) -> Unit
+) -> Unit
+
 @Composable
 internal fun RoundView(
     uiState: GameUiState,
     onAction: (GameAction) -> Unit,
-    onSettingsClick: () -> Unit
+    onSettingsClick: () -> Unit,
+    mapContent: MapContent
 ) {
     var selectedLocation by remember(uiState.currentRound) { mutableStateOf<LatLng?>(null) }
     var isPhotoVisible by remember(uiState.currentRound) { mutableStateOf(true) }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        GameMap(
-            modifier = Modifier.fillMaxSize(),
-            selectedLocation = selectedLocation,
-            lastGuess = uiState.lastGuess,
-            onMapClick = { if (uiState.lastGuess == null) selectedLocation = it }
-        )
+        mapContent(
+            selectedLocation,
+            uiState.lastGuess
+        ) { if (uiState.lastGuess == null) selectedLocation = it }
 
         PhotoOverlay(
             photo = uiState.currentPhoto,
@@ -109,7 +114,14 @@ internal fun RoundView(
             currentRound = uiState.currentRound,
             totalRounds = GameConstants.TOTAL_ROUNDS,
             onSubmitGuess = {
-                selectedLocation?.let { onAction(GameAction.SubmitGuess(it.latitude, it.longitude)) }
+                selectedLocation?.let {
+                    onAction(
+                        GameAction.SubmitGuess(
+                            it.latitude,
+                            it.longitude
+                        )
+                    )
+                }
             },
             onNextRound = {
                 onAction(GameAction.NextRound)
@@ -124,7 +136,7 @@ internal fun RoundView(
 }
 
 @Composable
-private fun GameMap(
+internal fun GameMap(
     selectedLocation: LatLng?,
     lastGuess: Guess?,
     onMapClick: (LatLng) -> Unit,
