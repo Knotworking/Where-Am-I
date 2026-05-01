@@ -62,16 +62,18 @@ import com.knotworking.whereami.feature.game.R
 
 private const val METERS_PER_KM = 1000.0
 
-internal typealias MapContent = @Composable (LatLng?, Guess?, (LatLng) -> Unit) -> Unit
+internal typealias MapContent = @Composable (
+    selectedLocation: LatLng?,
+    lastGuess: Guess?,
+    onMapCLick: (LatLng) -> Unit
+) -> Unit
 
 @Composable
 internal fun RoundView(
     uiState: GameUiState,
     onAction: (GameAction) -> Unit,
     onSettingsClick: () -> Unit,
-    mapContent: MapContent = { selectedLocation, guess, click ->
-        GameMap(modifier = Modifier.fillMaxSize(), selectedLocation = selectedLocation, lastGuess = guess, onMapClick = click)
-    }
+    mapContent: MapContent
 ) {
     var selectedLocation by remember(uiState.currentRound) { mutableStateOf<LatLng?>(null) }
     var isPhotoVisible by remember(uiState.currentRound) { mutableStateOf(true) }
@@ -112,7 +114,14 @@ internal fun RoundView(
             currentRound = uiState.currentRound,
             totalRounds = GameConstants.TOTAL_ROUNDS,
             onSubmitGuess = {
-                selectedLocation?.let { onAction(GameAction.SubmitGuess(it.latitude, it.longitude)) }
+                selectedLocation?.let {
+                    onAction(
+                        GameAction.SubmitGuess(
+                            it.latitude,
+                            it.longitude
+                        )
+                    )
+                }
             },
             onNextRound = {
                 onAction(GameAction.NextRound)
