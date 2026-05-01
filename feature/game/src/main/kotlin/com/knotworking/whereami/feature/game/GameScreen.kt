@@ -42,7 +42,12 @@ fun GameScreen(
     onAction: (GameAction) -> Unit,
     uiState: GameUiState,
     mapContent: MapContent = { selectedLocation, guess, click ->
-        GameMap(modifier = Modifier.fillMaxSize(), selectedLocation = selectedLocation, lastGuess = guess, onMapClick = click)
+        GameMap(
+            modifier = Modifier.fillMaxSize(),
+            selectedLocation = selectedLocation,
+            lastGuess = guess,
+            onMapClick = click
+        )
     }
 ) {
     Surface(
