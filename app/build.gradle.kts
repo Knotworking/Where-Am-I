@@ -57,8 +57,10 @@ dependencies {
     implementation(project(":feature:settings"))
     implementation(project(":domain:game"))
     implementation(project(":domain:photo"))
+    implementation(project(":domain:settings"))
     implementation(project(":data:photo"))
     implementation(project(":data:game"))
+    implementation(project(":data:settings"))
     implementation(project(":core:network"))
     implementation(project(":core:ui"))
 
