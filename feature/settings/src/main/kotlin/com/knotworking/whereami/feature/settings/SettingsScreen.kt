@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.knotworking.whereami.domain.photo.model.PhotoSource
+import com.knotworking.whereami.domain.settings.model.AppTheme
 
 @Composable
 fun SettingsScreenRoot(
@@ -98,12 +99,51 @@ fun SettingsScreen(
                     ) {
                         RadioButton(
                             selected = (source == uiState.photoSource),
-                            onClick = null // null recommended for accessibility with screen readers
+                            onClick = null
                         )
                         Text(
                             text = when (source) {
                                 PhotoSource.FLICKR -> stringResource(R.string.settings_source_flickr)
                                 PhotoSource.BENHIKES -> stringResource(R.string.settings_source_benhikes)
+                            },
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = stringResource(R.string.settings_theme),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            Column(Modifier.selectableGroup()) {
+                AppTheme.entries.forEach { theme ->
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .selectable(
+                                selected = (theme == uiState.appTheme),
+                                onClick = { onAction(SettingsAction.SetTheme(theme)) },
+                                role = Role.RadioButton
+                            )
+                            .padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = (theme == uiState.appTheme),
+                            onClick = null
+                        )
+                        Text(
+                            text = when (theme) {
+                                AppTheme.AUTO -> stringResource(R.string.settings_theme_auto)
+                                AppTheme.LIGHT -> stringResource(R.string.settings_theme_light)
+                                AppTheme.DARK -> stringResource(R.string.settings_theme_dark)
                             },
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.padding(start = 16.dp)

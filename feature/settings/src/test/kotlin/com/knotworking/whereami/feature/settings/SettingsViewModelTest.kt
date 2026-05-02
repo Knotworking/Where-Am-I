@@ -7,6 +7,10 @@ import com.knotworking.whereami.domain.photo.FakePhotoRepository
 import com.knotworking.whereami.domain.photo.model.PhotoSource
 import com.knotworking.whereami.domain.photo.usecase.GetPhotoSourceUseCase
 import com.knotworking.whereami.domain.photo.usecase.SetPhotoSourceUseCase
+import com.knotworking.whereami.domain.settings.FakeSettingsRepository
+import com.knotworking.whereami.domain.settings.model.AppTheme
+import com.knotworking.whereami.domain.settings.usecase.GetThemeUseCase
+import com.knotworking.whereami.domain.settings.usecase.SetThemeUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -23,13 +27,22 @@ class SettingsViewModelTest {
     private val getPhotoSourceUseCase = GetPhotoSourceUseCase(fakePhotoRepository)
     private val setPhotoSourceUseCase = SetPhotoSourceUseCase(fakePhotoRepository)
 
+    private val fakeSettingsRepository = FakeSettingsRepository()
+    private val getThemeUseCase = GetThemeUseCase(fakeSettingsRepository)
+    private val setThemeUseCase = SetThemeUseCase(fakeSettingsRepository)
+
     private lateinit var viewModel: SettingsViewModel
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @BeforeEach
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = SettingsViewModel(getPhotoSourceUseCase, setPhotoSourceUseCase)
+        viewModel = SettingsViewModel(
+            getPhotoSourceUseCase,
+            setPhotoSourceUseCase,
+            getThemeUseCase,
+            setThemeUseCase
+        )
     }
 
     @AfterEach
@@ -58,6 +71,30 @@ class SettingsViewModelTest {
         viewModel.onAction(SettingsAction.SetPhotoSource(PhotoSource.BENHIKES))
         viewModel.uiState.test {
             assertThat(awaitItem().photoSource).isEqualTo(PhotoSource.BENHIKES)
+        }
+    }
+
+    @Test
+    fun `initial theme is AUTO`() = runTest {
+        viewModel.uiState.test {
+            assertThat(awaitItem().appTheme).isEqualTo(AppTheme.AUTO)
+        }
+    }
+
+    @Test
+    fun `setTheme updates uiState to new theme`() = runTest {
+        viewModel.uiState.test {
+            awaitItem() // initial state
+            viewModel.onAction(SettingsAction.SetTheme(AppTheme.DARK))
+            assertThat(awaitItem().appTheme).isEqualTo(AppTheme.DARK)
+        }
+    }
+
+    @Test
+    fun `setTheme persists change to repository`() = runTest {
+        viewModel.onAction(SettingsAction.SetTheme(AppTheme.LIGHT))
+        viewModel.uiState.test {
+            assertThat(awaitItem().appTheme).isEqualTo(AppTheme.LIGHT)
         }
     }
 }

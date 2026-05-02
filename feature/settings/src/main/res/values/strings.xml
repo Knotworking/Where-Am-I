@@ -6,4 +6,8 @@
     <string name="settings_source_flickr">Flickr</string>
     <string name="settings_source_benhikes">BenHikes</string>
     <string name="settings_high_scores">High Scores</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_auto">Auto (System default)</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
 </resources>
