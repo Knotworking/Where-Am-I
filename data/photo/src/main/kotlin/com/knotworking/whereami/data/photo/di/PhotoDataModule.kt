@@ -53,12 +53,19 @@ object PhotoDataModule {
 
     @Provides
     @Singleton
-    fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
+    @PhotoDataStore
+    fun providePhotoDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
         return PreferenceDataStoreFactory.create(
-            produceFile = { context.preferencesDataStoreFile("settings") }
+            produceFile = { context.preferencesDataStoreFile(PHOTO_DATASTORE_NAME) }
         )
     }
 }
+
+private const val PHOTO_DATASTORE_NAME = "photo_prefs"
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class PhotoDataStore
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)

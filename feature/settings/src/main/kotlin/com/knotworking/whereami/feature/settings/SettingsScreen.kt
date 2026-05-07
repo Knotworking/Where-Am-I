@@ -77,83 +77,16 @@ fun SettingsScreen(
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            Text(
-                text = stringResource(R.string.settings_photo_source),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 8.dp)
+            PhotoSourceSection(
+                selected = uiState.photoSource,
+                onSelect = { onAction(SettingsAction.SetPhotoSource(it)) }
             )
-
-            Column(Modifier.selectableGroup()) {
-                PhotoSource.entries.forEach { source ->
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                            .selectable(
-                                selected = (source == uiState.photoSource),
-                                onClick = { onAction(SettingsAction.SetPhotoSource(source)) },
-                                role = Role.RadioButton
-                            )
-                            .padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = (source == uiState.photoSource),
-                            onClick = null
-                        )
-                        Text(
-                            text = when (source) {
-                                PhotoSource.FLICKR -> stringResource(R.string.settings_source_flickr)
-                                PhotoSource.BENHIKES -> stringResource(R.string.settings_source_benhikes)
-                            },
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(start = 16.dp)
-                        )
-                    }
-                }
-            }
-
             Spacer(modifier = Modifier.height(24.dp))
-
-            Text(
-                text = stringResource(R.string.settings_theme),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 8.dp)
+            ThemeSection(
+                selected = uiState.appTheme,
+                onSelect = { onAction(SettingsAction.SetTheme(it)) }
             )
-
-            Column(Modifier.selectableGroup()) {
-                AppTheme.entries.forEach { theme ->
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                            .selectable(
-                                selected = (theme == uiState.appTheme),
-                                onClick = { onAction(SettingsAction.SetTheme(theme)) },
-                                role = Role.RadioButton
-                            )
-                            .padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = (theme == uiState.appTheme),
-                            onClick = null
-                        )
-                        Text(
-                            text = when (theme) {
-                                AppTheme.AUTO -> stringResource(R.string.settings_theme_auto)
-                                AppTheme.LIGHT -> stringResource(R.string.settings_theme_light)
-                                AppTheme.DARK -> stringResource(R.string.settings_theme_dark)
-                            },
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(start = 16.dp)
-                        )
-                    }
-                }
-            }
-
             Spacer(modifier = Modifier.height(16.dp))
-
             TextButton(onClick = onLeaderboardClick) {
                 Icon(Icons.Default.Menu, contentDescription = null)
                 Text(
@@ -162,5 +95,67 @@ fun SettingsScreen(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun PhotoSourceSection(selected: PhotoSource?, onSelect: (PhotoSource) -> Unit) {
+    Text(
+        text = stringResource(R.string.settings_photo_source),
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.padding(bottom = 8.dp)
+    )
+    Column(Modifier.selectableGroup()) {
+        PhotoSource.entries.forEach { source ->
+            RadioRow(
+                label = when (source) {
+                    PhotoSource.FLICKR -> stringResource(R.string.settings_source_flickr)
+                    PhotoSource.BENHIKES -> stringResource(R.string.settings_source_benhikes)
+                },
+                selected = source == selected,
+                onClick = { onSelect(source) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun ThemeSection(selected: AppTheme?, onSelect: (AppTheme) -> Unit) {
+    Text(
+        text = stringResource(R.string.settings_theme),
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.padding(bottom = 8.dp)
+    )
+    Column(Modifier.selectableGroup()) {
+        AppTheme.entries.forEach { theme ->
+            RadioRow(
+                label = when (theme) {
+                    AppTheme.AUTO -> stringResource(R.string.settings_theme_auto)
+                    AppTheme.LIGHT -> stringResource(R.string.settings_theme_light)
+                    AppTheme.DARK -> stringResource(R.string.settings_theme_dark)
+                },
+                selected = theme == selected,
+                onClick = { onSelect(theme) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun RadioRow(label: String, selected: Boolean, onClick: () -> Unit) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .selectable(selected = selected, onClick = onClick, role = Role.RadioButton)
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(selected = selected, onClick = null)
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(start = 16.dp)
+        )
     }
 }

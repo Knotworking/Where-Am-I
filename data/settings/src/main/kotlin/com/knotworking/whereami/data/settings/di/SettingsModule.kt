@@ -29,10 +29,12 @@ object SettingsDataModule {
     @SettingsDataStore
     fun provideSettingsDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
         return PreferenceDataStoreFactory.create(
-            produceFile = { context.preferencesDataStoreFile("app_settings") }
+            produceFile = { context.preferencesDataStoreFile(SETTINGS_DATASTORE_NAME) }
         )
     }
 }
+
+private const val SETTINGS_DATASTORE_NAME = "app_settings"
 
 @Module
 @InstallIn(SingletonComponent::class)

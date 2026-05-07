@@ -15,16 +15,16 @@ class SettingsRepositoryImpl @Inject constructor(
     @SettingsDataStore private val dataStore: DataStore<Preferences>
 ) : SettingsRepository {
 
-    private object Keys {
+    private object PreferencesKeys {
         val APP_THEME = stringPreferencesKey("app_theme")
     }
 
     override fun getTheme(): Flow<AppTheme> = dataStore.data.map { prefs ->
-        val name = prefs[Keys.APP_THEME] ?: AppTheme.AUTO.name
+        val name = prefs[PreferencesKeys.APP_THEME] ?: AppTheme.AUTO.name
         AppTheme.entries.find { it.name == name } ?: AppTheme.AUTO
     }
 
     override suspend fun setTheme(theme: AppTheme) {
-        dataStore.edit { prefs -> prefs[Keys.APP_THEME] = theme.name }
+        dataStore.edit { prefs -> prefs[PreferencesKeys.APP_THEME] = theme.name }
     }
 }
