@@ -99,7 +99,7 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun PhotoSourceSection(selected: PhotoSource?, onSelect: (PhotoSource) -> Unit) {
+private fun PhotoSourceSection(selected: PhotoSource, onSelect: (PhotoSource) -> Unit) {
     Text(
         text = stringResource(R.string.settings_photo_source),
         style = MaterialTheme.typography.titleMedium,
@@ -120,7 +120,7 @@ private fun PhotoSourceSection(selected: PhotoSource?, onSelect: (PhotoSource) -
 }
 
 @Composable
-private fun ThemeSection(selected: AppTheme?, onSelect: (AppTheme) -> Unit) {
+private fun ThemeSection(selected: AppTheme, onSelect: (AppTheme) -> Unit) {
     Text(
         text = stringResource(R.string.settings_theme),
         style = MaterialTheme.typography.titleMedium,
