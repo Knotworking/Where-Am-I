@@ -2,6 +2,7 @@ package com.knotworking.whereami
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.knotworking.whereami.core.ui.CONFIG_CHANGE_TIMEOUT_MS
 import com.knotworking.whereami.domain.settings.model.AppTheme
 import com.knotworking.whereami.domain.settings.usecase.GetThemeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +19,7 @@ class MainViewModel @Inject constructor(
     val appTheme: StateFlow<AppTheme> = getThemeUseCase()
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000L),
+            started = SharingStarted.WhileSubscribed(CONFIG_CHANGE_TIMEOUT_MS),
             initialValue = AppTheme.AUTO
         )
 }

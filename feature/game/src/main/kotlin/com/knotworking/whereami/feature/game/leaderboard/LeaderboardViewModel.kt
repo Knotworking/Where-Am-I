@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import com.knotworking.whereami.core.ui.CONFIG_CHANGE_TIMEOUT_MS
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,7 +25,7 @@ class LeaderboardViewModel @Inject constructor(
 
     val uiState: StateFlow<LeaderboardUiState> = getHighScoresUseCase()
         .map { LeaderboardUiState(isLoading = false, scores = it) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), LeaderboardUiState())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(CONFIG_CHANGE_TIMEOUT_MS), LeaderboardUiState())
 
     fun onAction(action: LeaderboardAction) {
         when (action) {

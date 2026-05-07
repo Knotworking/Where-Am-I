@@ -13,10 +13,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import com.knotworking.whereami.core.ui.CONFIG_CHANGE_TIMEOUT_MS
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-private const val SUBSCRIBE_TIMEOUT_MS = 5000L
 
 sealed interface SettingsAction {
     data class SetPhotoSource(val source: PhotoSource) : SettingsAction
@@ -38,7 +37,7 @@ class SettingsViewModel @Inject constructor(
         SettingsUiState(photoSource = source, appTheme = theme)
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(SUBSCRIBE_TIMEOUT_MS),
+        started = SharingStarted.WhileSubscribed(CONFIG_CHANGE_TIMEOUT_MS),
         initialValue = SettingsUiState()
     )
 
