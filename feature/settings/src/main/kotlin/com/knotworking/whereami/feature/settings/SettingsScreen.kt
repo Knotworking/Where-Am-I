@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.knotworking.whereami.domain.photo.model.PhotoSource
+import com.knotworking.whereami.domain.settings.model.AppTheme
 
 @Composable
 fun SettingsScreenRoot(
@@ -76,44 +77,16 @@ fun SettingsScreen(
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            Text(
-                text = stringResource(R.string.settings_photo_source),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 8.dp)
+            PhotoSourceSection(
+                selected = uiState.photoSource,
+                onSelect = { onAction(SettingsAction.SetPhotoSource(it)) }
             )
-
-            Column(Modifier.selectableGroup()) {
-                PhotoSource.entries.forEach { source ->
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                            .selectable(
-                                selected = (source == uiState.photoSource),
-                                onClick = { onAction(SettingsAction.SetPhotoSource(source)) },
-                                role = Role.RadioButton
-                            )
-                            .padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = (source == uiState.photoSource),
-                            onClick = null // null recommended for accessibility with screen readers
-                        )
-                        Text(
-                            text = when (source) {
-                                PhotoSource.FLICKR -> stringResource(R.string.settings_source_flickr)
-                                PhotoSource.BENHIKES -> stringResource(R.string.settings_source_benhikes)
-                            },
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(start = 16.dp)
-                        )
-                    }
-                }
-            }
-
+            Spacer(modifier = Modifier.height(24.dp))
+            ThemeSection(
+                selected = uiState.appTheme,
+                onSelect = { onAction(SettingsAction.SetTheme(it)) }
+            )
             Spacer(modifier = Modifier.height(16.dp))
-
             TextButton(onClick = onLeaderboardClick) {
                 Icon(Icons.Default.Menu, contentDescription = null)
                 Text(
@@ -122,5 +95,67 @@ fun SettingsScreen(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun PhotoSourceSection(selected: PhotoSource, onSelect: (PhotoSource) -> Unit) {
+    Text(
+        text = stringResource(R.string.settings_photo_source),
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.padding(bottom = 8.dp)
+    )
+    Column(Modifier.selectableGroup()) {
+        PhotoSource.entries.forEach { source ->
+            RadioRow(
+                label = when (source) {
+                    PhotoSource.FLICKR -> stringResource(R.string.settings_source_flickr)
+                    PhotoSource.BENHIKES -> stringResource(R.string.settings_source_benhikes)
+                },
+                selected = source == selected,
+                onClick = { onSelect(source) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun ThemeSection(selected: AppTheme, onSelect: (AppTheme) -> Unit) {
+    Text(
+        text = stringResource(R.string.settings_theme),
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.padding(bottom = 8.dp)
+    )
+    Column(Modifier.selectableGroup()) {
+        AppTheme.entries.forEach { theme ->
+            RadioRow(
+                label = when (theme) {
+                    AppTheme.AUTO -> stringResource(R.string.settings_theme_auto)
+                    AppTheme.LIGHT -> stringResource(R.string.settings_theme_light)
+                    AppTheme.DARK -> stringResource(R.string.settings_theme_dark)
+                },
+                selected = theme == selected,
+                onClick = { onSelect(theme) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun RadioRow(label: String, selected: Boolean, onClick: () -> Unit) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .selectable(selected = selected, onClick = onClick, role = Role.RadioButton)
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(selected = selected, onClick = null)
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(start = 16.dp)
+        )
     }
 }

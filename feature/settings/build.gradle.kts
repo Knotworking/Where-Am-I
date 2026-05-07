@@ -27,6 +27,7 @@ android {
 
 dependencies {
     implementation(project(":domain:photo"))
+    implementation(project(":domain:settings"))
     implementation(project(":core:ui"))
 
     implementation(libs.hilt.android)
@@ -47,6 +48,7 @@ dependencies {
     testRuntimeOnly(libs.junit5.engine)
     testRuntimeOnly(libs.junit5.launcher)
     testImplementation(testFixtures(project(":domain:photo")))
+    testImplementation(testFixtures(project(":domain:settings")))
     testImplementation(libs.assertk)
     testImplementation(libs.turbine)
     testImplementation(libs.kotlinx.coroutines.test)

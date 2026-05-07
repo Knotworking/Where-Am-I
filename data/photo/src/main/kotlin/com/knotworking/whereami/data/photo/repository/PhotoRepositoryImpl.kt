@@ -16,12 +16,13 @@ import com.knotworking.whereami.domain.photo.repository.PhotoRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import com.knotworking.whereami.data.photo.di.PhotoDataStore
 import javax.inject.Inject
 
 class PhotoRepositoryImpl @Inject constructor(
     private val flickrDataSource: FlickrDataSource,
     private val benHikesDataSource: BenHikesDataSource,
-    private val dataStore: DataStore<Preferences>
+    @PhotoDataStore private val dataStore: DataStore<Preferences>
 ) : PhotoRepository {
 
     private object PreferencesKeys {

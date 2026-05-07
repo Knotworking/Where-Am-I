@@ -42,6 +42,12 @@ android {
             )
         }
     }
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -57,8 +63,10 @@ dependencies {
     implementation(project(":feature:settings"))
     implementation(project(":domain:game"))
     implementation(project(":domain:photo"))
+    implementation(project(":domain:settings"))
     implementation(project(":data:photo"))
     implementation(project(":data:game"))
+    implementation(project(":data:settings"))
     implementation(project(":core:network"))
     implementation(project(":core:ui"))
 
@@ -93,7 +101,12 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
-    testImplementation(libs.junit)
+    testImplementation(libs.junit5.api)
+    testRuntimeOnly(libs.junit5.engine)
+    testRuntimeOnly(libs.junit5.launcher)
+    testImplementation(testFixtures(project(":domain:settings")))
+    testImplementation(libs.assertk)
+    testImplementation(libs.turbine)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.androidx.core)
     testImplementation(libs.androidx.junit)
