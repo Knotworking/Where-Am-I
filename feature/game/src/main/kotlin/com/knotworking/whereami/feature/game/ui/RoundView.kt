@@ -153,16 +153,18 @@ internal fun GameMap(
         onMapClick = onMapClick
     ) {
         selectedLocation?.let {
+            val markerState = remember(it) { MarkerState(position = it) }
             Marker(
-                state = MarkerState(position = it),
+                state = markerState,
                 title = stringResource(R.string.game_your_guess)
             )
         }
         lastGuess?.let { guess ->
             val actual = LatLng(guess.actualLatitude, guess.actualLongitude)
             val guessed = LatLng(guess.latitude, guess.longitude)
+            val actualMarkerState = remember(actual) { MarkerState(position = actual) }
             Marker(
-                state = MarkerState(position = actual),
+                state = actualMarkerState,
                 title = stringResource(R.string.game_actual_location),
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
             )
