@@ -80,18 +80,18 @@ graph LR
 
 ## Module map
 
-| Module | Role |
-|---|---|
-| `:app` | Entry point, Hilt setup, Compose Navigation host |
-| `:feature:game` | Game screen, leaderboard screen, ViewModels |
-| `:feature:settings` | Photo source toggle (Flickr / BenHikes) |
-| `:domain:game` | Game models, scoring use cases, high score repository interface |
-| `:domain:photo` | Photo model, `GetRandomGeotaggedPhotoUseCase`, repository interface |
-| `:data:photo` | `PhotoRepositoryImpl`, Flickr + BenHikes data sources, DataStore |
-| `:data:game` | `HighScoreRepositoryImpl`, Room database + DAO |
-| `:core:network` | Hilt module: shared OkHttpClient, Moshi |
-| `:core:ui` | Material 3 theme only |
-| `:core:domain` | Shared models and `Result<T, E>` wrapper |
+| Module              | Role                                                                |
+|---------------------|---------------------------------------------------------------------|
+| `:app`              | Entry point, Hilt setup, Compose Navigation host                    |
+| `:feature:game`     | Game screen, leaderboard screen, ViewModels                         |
+| `:feature:settings` | Photo source toggle (Flickr / BenHikes)                             |
+| `:domain:game`      | Game models, scoring use cases, high score repository interface     |
+| `:domain:photo`     | Photo model, `GetRandomGeotaggedPhotoUseCase`, repository interface |
+| `:data:photo`       | `PhotoRepositoryImpl`, Flickr + BenHikes data sources, DataStore    |
+| `:data:game`        | `HighScoreRepositoryImpl`, Room database + DAO                      |
+| `:core:network`     | Hilt module: shared OkHttpClient, Moshi                             |
+| `:core:ui`          | Material 3 theme only                                               |
+| `:core:domain`      | Shared models and `Result<T, E>` wrapper                            |
 
 ---
 

@@ -103,9 +103,9 @@ Avoid passing complex objects via navigation — pass IDs and load data in the d
 
 ## Naming Conventions
 
-| Thing             | Convention                                 | Example                              |
-|-------------------|--------------------------------------------|------------------------------------- |
-| Nav route         | `<Screen>Route`                            | `GameRoute`, `LeaderboardRoute`      |
+| Thing             | Convention                                 | Example                                |
+|-------------------|--------------------------------------------|----------------------------------------|
+| Nav route         | `<Screen>Route`                            | `GameRoute`, `LeaderboardRoute`        |
 | Feature nav graph | `<feature>Graph(...)` on `NavGraphBuilder` | `gameGraph(...)`, `settingsGraph(...)` |
 
  

@@ -105,15 +105,15 @@ This pattern is optional — apply it when the project requires offline support.
 
 ## Naming Conventions
 
-| Thing | Convention | Example |
-|---|---|---|
-| Data source interface | `Remote<Entity>DataSource` | `RemotePhotoDataSource` |
-| Data source impl | describe what makes it unique | `FlickrDataSource`, `BenHikesDataSource` |
-| Repository interface | `<Entity>Repository` | `PhotoRepository`, `HighScoreRepository` |
-| Repository impl | describe what makes it unique | `PhotoRepositoryImpl`, `RoomHighScoreRepository` |
-| DTO | `<Model>Dto` | `BenHikesPhotoDto` |
-| Room entity | `<Model>Entity` | `HighScoreEntity` |
-| Mapper | extension fun on source type | `fun BenHikesPhotoDto.toPhoto()` |
+| Thing                 | Convention                    | Example                                          |
+|-----------------------|-------------------------------|--------------------------------------------------|
+| Data source interface | `Remote<Entity>DataSource`    | `RemotePhotoDataSource`                          |
+| Data source impl      | describe what makes it unique | `FlickrDataSource`, `BenHikesDataSource`         |
+| Repository interface  | `<Entity>Repository`          | `PhotoRepository`, `HighScoreRepository`         |
+| Repository impl       | describe what makes it unique | `PhotoRepositoryImpl`, `RoomHighScoreRepository` |
+| DTO                   | `<Model>Dto`                  | `BenHikesPhotoDto`                               |
+| Room entity           | `<Model>Entity`               | `HighScoreEntity`                                |
+| Mapper                | extension fun on source type  | `fun BenHikesPhotoDto.toPhoto()`                 |
  
 ---
 
