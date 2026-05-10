@@ -132,7 +132,7 @@ dispatcher:
 
 ```kotlin
 class ImageCompressor(private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO) {
-    suspend fun compress(bytes: ByteArray): ByteArray = withContext(ioDispatcher) { ... }
+    suspend fun compress(bytes: ByteArray): ByteArray = withContext(ioDispatcher) { }
 }
 
 // In test:

@@ -95,7 +95,7 @@ dependencies {
     implementation(libs.maps.compose)
     implementation(libs.logging.interceptor)
     implementation(libs.okhttp)
-    implementation(libs.moshi.kotlin)
+    implementation(libs.moshi)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.material)
     implementation(libs.hilt.android)

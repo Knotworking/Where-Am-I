@@ -1,6 +1,5 @@
 package com.knotworking.whereami.domain.photo.usecase
 
-import com.knotworking.whereami.core.domain.DataError
 import com.knotworking.whereami.core.domain.Error
 import com.knotworking.whereami.core.domain.Result
 import com.knotworking.whereami.domain.photo.model.Photo

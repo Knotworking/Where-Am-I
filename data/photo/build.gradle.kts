@@ -47,7 +47,7 @@ dependencies {
 
     implementation(libs.retrofit)
     implementation(libs.converter.moshi)
-    implementation(libs.moshi.kotlin)
+    implementation(libs.moshi)
     ksp(libs.moshi.kotlin.codegen)
     implementation(libs.okhttp)
 

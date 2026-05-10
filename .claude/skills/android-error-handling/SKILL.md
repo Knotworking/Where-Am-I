@@ -129,12 +129,12 @@ Multiple validation errors are not supported — always return a single error ty
 
 Never throw exceptions for expected failures — always return `Result.Error`. Catch exceptions at the layer that is responsible for the exception:
 
-| Exception origin | Catch in | Example |
-|---|---|---|
-| HTTP / network | Data layer | `UnresolvedAddressException` → `DataError.Network.NO_INTERNET` |
-| Database / disk | Data layer | `SQLiteFullException` → `DataError.Local.DISK_FULL` |
-| Business logic | Domain layer | Invalid input → `Result.Error(ValidationError.TOO_SHORT)` |
-| Presentation | Presentation layer | Catch and map to `Result.Error` at that layer |
+| Exception origin | Catch in           | Example                                                        |
+|------------------|--------------------|----------------------------------------------------------------|
+| HTTP / network   | Data layer         | `UnresolvedAddressException` → `DataError.Network.NO_INTERNET` |
+| Database / disk  | Data layer         | `SQLiteFullException` → `DataError.Local.DISK_FULL`            |
+| Business logic   | Domain layer       | Invalid input → `Result.Error(ValidationError.TOO_SHORT)`      |
+| Presentation     | Presentation layer | Catch and map to `Result.Error` at that layer                  |
 
 The layer that owns the exception catches it and converts it to a typed `Result.Error`. Upper layers never see raw exceptions for expected failures.
 
@@ -210,12 +210,12 @@ return when (val result = safeCall { dataSource.fetchPhoto() }) {
 
 ## When to Use What
 
-| Scenario | Error type | Example return |
-|---|---|---|
-| Network call | `DataError.Network` | `Result<List<BenHikesPhotoDto>, DataError.Network>` |
-| Local DB access | `DataError.Local` | `Result<HighScore, DataError.Local>` |
-| Repository (multi-source) | `DataError` (supertype) | `Result<List<Photo>, DataError>` |
-| Domain validation | Custom `Error` enum | `EmptyResult<PasswordValidationError>` |
-| Auth logic | Custom `Error` enum | `Result<User, AuthError>` |
+| Scenario                  | Error type              | Example return                                      |
+|---------------------------|-------------------------|-----------------------------------------------------|
+| Network call              | `DataError.Network`     | `Result<List<BenHikesPhotoDto>, DataError.Network>` |
+| Local DB access           | `DataError.Local`       | `Result<HighScore, DataError.Local>`                |
+| Repository (multi-source) | `DataError` (supertype) | `Result<List<Photo>, DataError>`                    |
+| Domain validation         | Custom `Error` enum     | `EmptyResult<PasswordValidationError>`              |
+| Auth logic                | Custom `Error` enum     | `Result<User, AuthError>`                           |
 
 The `Result` wrapper is not limited to the data layer — use it anywhere a function has typed success and failure outcomes.

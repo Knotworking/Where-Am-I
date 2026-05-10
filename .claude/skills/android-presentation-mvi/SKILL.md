@@ -208,7 +208,7 @@ fun LeaderboardScreenRoot(
 fun LeaderboardScreen(
     uiState: LeaderboardUiState,
     onAction: (LeaderboardAction) -> Unit
-) { ... }
+) { }
 
 @Preview
 @Composable
@@ -249,15 +249,15 @@ Only save what truly matters after process death — not the entire state.
  
 ## Naming Conventions
  
-| Thing | Convention | Example |
-|---|---|---|
-| ViewModel | `<Screen>ViewModel` | `GameViewModel`, `LeaderboardViewModel` |
-| State | `<Screen>UiState` | `GameUiState`, `LeaderboardUiState` |
-| Action | `<Screen>Action` | `LeaderboardAction` |
-| Event | `<Screen>Event` | `LeaderboardEvent` |
-| Root composable | `<Screen>Root` | `GameScreenRoot`, `LeaderboardScreenRoot` |
-| Screen composable | `<Screen>Screen` | `GameScreen`, `LeaderboardScreen` |
-| UI model | `<Model>Ui` | `HighScoreUi` |
+| Thing             | Convention          | Example                                   |
+|-------------------|---------------------|-------------------------------------------|
+| ViewModel         | `<Screen>ViewModel` | `GameViewModel`, `LeaderboardViewModel`   |
+| State             | `<Screen>UiState`   | `GameUiState`, `LeaderboardUiState`       |
+| Action            | `<Screen>Action`    | `LeaderboardAction`                       |
+| Event             | `<Screen>Event`     | `LeaderboardEvent`                        |
+| Root composable   | `<Screen>Root`      | `GameScreenRoot`, `LeaderboardScreenRoot` |
+| Screen composable | `<Screen>Screen`    | `GameScreen`, `LeaderboardScreen`         |
+| UI model          | `<Model>Ui`         | `HighScoreUi`                             |
  
 ---
  
